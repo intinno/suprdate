@@ -21,7 +21,7 @@ class Year
   def succ() self + 1 end
   
   def months
-    MONTH_INDEX_RANGE.to_a.map { |index| month_class.new(self, index) } 
+    MONTH_RANGE.to_a.map { |index| month_class.new(self, index) } 
   end
   
   def month(*indexes)

@@ -19,31 +19,6 @@
     out
   end
     
-  DAYS_OF_WEEK = [
-    [:mon, "Monday",    /^mo/i],
-    [:tue, "Tuesday",   /^tu/i],
-    [:wed, "Wednesday", /^we/i],
-    [:thu, "Thursday",  /^th/i],
-    [:fri, "Friday",    /^fi/i],
-    [:sat, "Saturday",  /^sa/i],
-    [:sun, "Sunday",    /^su/i]
-  ]
-  
-  MONTHS_OF_YEAR = [
-    [:jan, "January",   /^ja/i ], 
-    [:feb, "February",  /^fe/i ],
-    [:mar, "March",     /^ma/i ],
-    [:apr, "April",     /^ap/i ],
-    [:may, "May",       /^ma/i ],
-    [:jun, "June",      /^jun/i],
-    [:jul, "July",      /^jul/i],
-    [:aug, "August",    /^au/i ],
-    [:sep, "September", /^se/i ],
-    [:oct, "October",   /^oc/i ],
-    [:nov, "November",  /^no/i ],
-    [:dec, "December",  /^de/i ],
-  ]
-  
   === INF
   
     <=> # -1
