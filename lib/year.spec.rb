@@ -3,13 +3,12 @@ require 'year'
 
 module YearHelpers
   
-  def rand_int(size = 80_000) (rand * size).round - size / 2 end
   def y_rand_int() (rand * 8000).round + 1600 end
   def y(x = 1600) Year.new(x) end
   
 end
 
-describe 'year is an integer' do
+describe 'year is like an integer' do
 
   include YearHelpers
 
@@ -35,6 +34,14 @@ describe 'year is an integer' do
     (y(a = y_rand_int) - b = 10).should == y(a - b)
   end
   
+  it "should hold state after arithmetic" do
+    a = Year.new(2000)
+    a.month_class = :foo
+    b = a + 1
+    b.month_class.should == :foo
+    b.object_id.should_not == a.object_id
+  end
+
 end
 
 describe 'year comprised of months' do
@@ -50,9 +57,9 @@ describe 'year comprised of months' do
   it "should return an array of months" do
     @month_class.should_receive(:new).
       with(@year, an_instance_of(Integer)).
-      exactly(12).times.and_return @expected
+      exactly(MONTHS_IN_YEAR).times.and_return @expected
     months = @year.months
-    months.nitems.should == 12
+    months.nitems.should == MONTHS_IN_YEAR
     months[0].should == @expected
   end
   
@@ -112,11 +119,11 @@ describe 'year comprised of days through months' do
     # days can only be created through months
     @month_class.should_receive(:new).
       with(@year, an_instance_of(Integer)).
-      exactly(12).times.and_return(@month)
+      exactly(MONTHS_IN_YEAR).times.and_return(@month)
     
     @month.should_receive(:days).with(no_args).
       # each month creates only two days in this example...
-      exactly(12).times.and_return [@expected, @expected]
+      exactly(MONTHS_IN_YEAR).times.and_return [@expected, @expected]
     
     days = @year.days
     # ...hence 24 days instead of 365
@@ -126,14 +133,14 @@ describe 'year comprised of days through months' do
 
 end
 
-describe 'year clones' do
+describe 'year copies' do
 
   it "should hold state" do
     a = Year.new(2000)
     a.month_class = :foo
-    b = a + 1
-    b.month_class.should == :foo
+    b= a.new(2001)
     b.object_id.should_not == a.object_id
+    b.month_class.should == a.month_class
   end
 
 end

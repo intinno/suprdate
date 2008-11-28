@@ -18,17 +18,17 @@ class Year
   
   protected :initialize # for + and -
   
-  def +(by) dup.initialize(@value + by) end
-  def -(by) dup.initialize(@value - by) end
+  def +(by) new(@value + by) end
+  def -(by) new(@value - by) end
   def <=>(compare) @value - compare.value  end
   def succ() self + 1 end
   
   def months
-    MONTH_RANGE.to_a.map { |index| month_class.new(self, index) } 
+    MONTH_RANGE.to_a.map { |i| month_class.new(self, i) } 
   end
   
-  def month(*indexes)
-    disarray(indexes.map { |index| month_class.new(self, index) })
+  def month(*ies)
+    disarray(ies.map { |i| month_class.new(self, i) })
   end
   
   def days
@@ -42,14 +42,16 @@ class Year
     false
   end
   
-  def inspect
-    "#{self.class} #{@value}"
-  end
+  def inspect() @value.to_s end
+    
+  # dup this object and give it a new value
+  def new(*args) dup.initialize(*args) end
   
   include Comparable
   
   alias :to_i :value
   alias :since :-
   alias :until :+
+  alias :to_s :inspect
   
 end

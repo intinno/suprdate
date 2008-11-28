@@ -69,23 +69,19 @@
 
     #initialize(Year, Integer || Symbol || String)
     #to_i # January is 1
-    days # [Days]
-    day(Integer) # Day
-    
-    attr_accessor :day_class
-    weeks # always raises
-    year # Year
-    num_days # Integer
-    to_s # "January"
-    to_sym # :jan
-    succ # Month
-    prev # Month
-    +(Integer) # Month
-    -(Integer) # Month
-    since(Month) # Integer
-    until(Month) # Integer
-    <=>(Day || Week || Month || Year) # Integer
-    inspect # String
+    #num_days # Integer
+    #days # [Days]
+    #day(Integer) # Day
+    #attr_accessor :day_class
+    #year # Year
+    #to_sym # :jan
+    #succ # Month
+    #+(Integer) # Month
+    #-(Integer) # Month
+    #<=>(Day || Week || Month || Year) # Integer
+    #inspect # String
+    #since(Month) # Integer
+    #until(Month) # Integer
   
   === Week
 
@@ -109,7 +105,8 @@
   
   === Day
 
-    initialize(Year, Month, Integer)
+    #initialize(Month, Integer)
+    
     week # Week
     month # Month
     year # Year

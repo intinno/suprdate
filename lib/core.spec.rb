@@ -1,3 +1,5 @@
+def rand_int(size = 80_000) (rand * size).round - size / 2 end
+
 describe 'disarray' do
 
   it "should return an array if 2 or more elements" do
