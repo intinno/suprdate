@@ -1,0 +1,203 @@
+=== DateTraversal
+
+  %w{Year Day Month Week}.each do |type| 
+    eval "def #{type}(*args) DEFAULT_BUILDER.#{type.downcase}(*args) end"
+  end
+  
+  def d(*args) DEFAULT_BUILDER.d(*args) end
+  def today() end
+  def every(x, enum, &block)
+    out = if block
+      enum
+    else
+      block = lambda { |value| out << value } 
+      []
+    end
+    enum.each_with_index do |value, key|
+      block.call(value) if key % x == 0
+    end
+    out
+  end
+    
+  DAYS_OF_WEEK = [
+    [:mon, "Monday",    /^mo/i],
+    [:tue, "Tuesday",   /^tu/i],
+    [:wed, "Wednesday", /^we/i],
+    [:thu, "Thursday",  /^th/i],
+    [:fri, "Friday",    /^fi/i],
+    [:sat, "Saturday",  /^sa/i],
+    [:sun, "Sunday",    /^su/i]
+  ]
+  
+  MONTHS_OF_YEAR = [
+    [:jan, "January",   /^ja/i ], 
+    [:feb, "February",  /^fe/i ],
+    [:mar, "March",     /^ma/i ],
+    [:apr, "April",     /^ap/i ],
+    [:may, "May",       /^ma/i ],
+    [:jun, "June",      /^jun/i],
+    [:jul, "July",      /^jul/i],
+    [:aug, "August",    /^au/i ],
+    [:sep, "September", /^se/i ],
+    [:oct, "October",   /^oc/i ],
+    [:nov, "November",  /^no/i ],
+    [:dec, "December",  /^de/i ],
+  ]
+  
+  === INF
+  
+    <=> # -1
+    succ # dummy
+    
+  === WeekDefinition
+  
+    year_from_week(Week) # Year
+    weeks_of_year(Year) # [Week]
+    week_start_offset # Integer
+    def use!
+      ::DEFAULT_BUILDER.week_definition = self
+    end
+    
+    # singleton instances
+    
+      ISO8601_WEEK
+      USA_WEEK
+      UK_WEEK
+    
+  === Builder
+  
+    week_definition
+    week_definition=
+    year
+    day
+    month
+    week
+    d
+    
+  === Year < IntWrap
+
+    initialize(Builder, Integer = Time.now.year)
+    method_missing(name, args)
+    month(Integer) # Month
+    months # [Month]
+    week(Integer) # Week
+    weeks # [Week]
+    days # [Day]
+    leap? # Boolean
+    prev # Year
+    <=>(Week) # Integer
+    inspect # String
+  
+  === Month
+
+    initialize(Builder, Year || Integer, Month || Integer || Symbol || String)
+    weeks # always raises
+    day(Integer) # Day
+    days # [Days]
+    year # Year
+    num_days # Integer
+    to_i # January is 1
+    to_s # "January"
+    to_sym # :jan
+    succ # Month
+    prev # Month
+    +(by) # Month
+    -(by) # Month
+    since(Month) # Integer
+    until(Month) # Integer
+    <=>(Week) # Integer
+    inspect # String
+  
+  === Week
+
+    initialize(Builder, Year || Integer, Integer)
+    days # [Day]
+    day(Integer || Symbol || String) # Day
+    month # always raises
+    year # Year
+    num_years_spanned # 1 || 2
+    num_months_spanned # 1 || 2
+    of_year # Integer
+    succ # Week
+    prev # Week
+    +(by) # Week
+    -(by) # Week
+    since(Week) # Integer
+    until(Week) # Integer
+    <=>(Week) # Integer
+    inspect # String
+  
+  === Day
+
+    initialize(Builder, Year || Integer, Month || Integer || Symbol || String, Integer)
+    week # Week
+    month # Month
+    year # Year
+    date # Date
+    time # Time
+    days # [self]
+    date_time # DateTime
+    of_month # Integer of 1..31
+    of_week_as_s # "Monday"
+    of_week_as_sym # :mon
+    of_week_as_i # 1
+    of_year # Integer
+    leap? # is February 29th? Boolean
+    succ # Day
+    prev # Day
+    +(by) # Day
+    -(by) # Day    
+    since(Day) # Integer
+    till(Day) # Integer    
+    <=>(Week) # Integer
+    inspect # String
+    weekday_of_month?(Hash) # Boolean
+      # {1 => :mon} # first monday
+      # {1 => [:mon]} # first monday
+      # {1 => [:mon, :tue]} # first tuesday
+    
+require 'date_traversal'
+include DateTraversal
+ISO8601_WEEK.use!
+
+months = []
+(Year 2000 .. Year 2010).each { |year| months << year.months[0..2] }
+months.flatten!
+
+days = []
+
+=== How the API has Progressed
+
+  === Before:
+    every 1, :months, :on => [1], :from => [2008, 11], :to => [2009, 3] { |date| }
+  === After:
+    (Month(2008, 11)..Month(2009, 3)).map { |m| m.day(1).date }.each { |date| }
+    
+  === Before:
+    every 1 :months, :fifth => [:tue, :fri], :third => [:mon], :from => [2008] { |date| }
+  === After
+    (Day(2008, 1, 1) .. INF).each do |day|
+      if day.weekday_of_month?(:fifth => [:fri, :tue], :third => :mon)
+        day.date
+      end
+    end
+
+  === Before:
+    every 2, :weeks, :from => :today, :on => [:mon, :tue, :wed] { |date| }
+  === After:
+    every(2, today.week .. Inf) do |w| 
+      w.days.select { |d| [:mon, :tue, :wed].include? d.of_week_as_sym }.each do |d| 
+        d.date
+      end
+    end
+
+
+=== Abstraction
+
+spec = EventSpec.new
+spec.repeats(:monthly, :from => Year(2009), :to => Year(2010))
+spec.when_day_of_month(:third => [:fri, :sat], :fifth => :mon)
+spec.when_day_of_month([3, 7, 8])
+spec.specified_days do |day|
+
+end
