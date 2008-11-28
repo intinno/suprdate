@@ -76,37 +76,37 @@
     
   === Year
 
-    attr_accessor :month_class,
-                  :week_class, 
-                  :day_class,
-                  :week_definition
-    initialize(Integer = Time.now.year)
-    month(Integer) # Month
-    months # [Month]
+    #initialize(Integer = Time.now.year)
+    #month(Integer) # Month
+    #months # [Month]
+    #days # [Day]
+    #leap? # Boolean
+    #inspect # String
+    #attr_accessor :month_class
+    #              :week_class 
+    #              :week_definition
+    
     week(Integer) # Week
     weeks # [Week]
-    days # [Day]
-    leap? # Boolean
-    prev # Year
     <=>(Day || Week || Month || Year) # Integer
-    inspect # String
   
   === Month
 
-    attr_accessor :day_class
     initialize(Year, Integer || Symbol || String)
+    to_i # January is 1
+    
+    attr_accessor :day_class
     weeks # always raises
     day(Integer) # Day
     days # [Days]
     year # Year
     num_days # Integer
-    to_i # January is 1
     to_s # "January"
     to_sym # :jan
     succ # Month
     prev # Month
-    +(by) # Month
-    -(by) # Month
+    +(Integer) # Month
+    -(Integer) # Month
     since(Month) # Integer
     until(Month) # Integer
     <=>(Day || Week || Month || Year) # Integer
@@ -125,8 +125,8 @@
     of_year # Integer
     succ # Week
     prev # Week
-    +(by) # Week
-    -(by) # Week
+    +(Integer) # Week
+    -(Integer) # Week
     since(Week) # Integer
     until(Week) # Integer
     <=>(Day || Week || Month || Year) # Integer
@@ -150,8 +150,8 @@
     leap? # is February 29th? Boolean
     succ # Day
     prev # Day
-    +(by) # Day
-    -(by) # Day    
+    +(Integer) # Day
+    -(Integer) # Day    
     since(Day) # Integer
     till(Day) # Integer    
     <=>(Day || Week || Month || Year) # Integer
