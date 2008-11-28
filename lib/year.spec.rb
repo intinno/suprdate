@@ -1,3 +1,4 @@
+require 'core'
 require 'year'
 
 module YearHelpers
@@ -6,7 +7,7 @@ module YearHelpers
     (rand * size).round - size / 2
   end
   
-  def y(x)
+  def y(x = 0)
     Year.new(x)
   end
   
@@ -43,17 +44,32 @@ end
 describe 'year as ancestor to sub divisions' do
 
   include YearHelpers
-
-  it "should return an array of months" do
-    year = y(0)
-    expected = rand_int
-    month_class = mock 'month class'
-    month_class.should_receive(:new).with(year, an_instance_of(Integer)).
-      exactly(12).times.and_return expected
-    year.month_class = month_class
-    months = year.months
-    months.nitems.should == 12
-    months[0].should == expected
+  
+  before(:each) do
+    @year = y
+    @expected = rand_int
+    @year.month_class = @month_class = mock('month class')
   end
 
+  it "should return an array of months" do
+    @month_class.should_receive(:new).
+      with(@year, an_instance_of(Integer)).
+      exactly(12).times.and_return @expected
+    months = @year.months
+    months.nitems.should == 12
+    months[0].should == @expected
+  end
+  
+  it "should provide individual months on demand" do
+    @month_class.should_receive(:new).with(@year, 1).once.and_return @expected
+    @year.month(1).should == @expected
+  end
+  
+  it "should provide multiple individual months on demand" do
+    @month_class.should_receive(:new).with(@year, 1).once.and_return 1
+    @month_class.should_receive(:new).with(@year, 3).once.and_return 2
+    @month_class.should_receive(:new).with(@year, 5).once.and_return 3
+    @year.month(1, 3, 5).should == [1, 2, 3]
+  end
+  
 end
