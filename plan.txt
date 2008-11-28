@@ -74,10 +74,13 @@
     week
     d
     
-  === Year < IntWrap
+  === Year
 
-    initialize(Builder, Integer = Time.now.year)
-    method_missing(name, args)
+    attr_accessor :month_class,
+                  :week_class, 
+                  :day_class,
+                  :week_definition
+    initialize(Integer = Time.now.year)
     month(Integer) # Month
     months # [Month]
     week(Integer) # Week
@@ -85,12 +88,13 @@
     days # [Day]
     leap? # Boolean
     prev # Year
-    <=>(Week) # Integer
+    <=>(Day || Week || Month || Year) # Integer
     inspect # String
   
   === Month
 
-    initialize(Builder, Year || Integer, Month || Integer || Symbol || String)
+    attr_accessor :day_class
+    initialize(Year, Integer || Symbol || String)
     weeks # always raises
     day(Integer) # Day
     days # [Days]
@@ -105,12 +109,13 @@
     -(by) # Month
     since(Month) # Integer
     until(Month) # Integer
-    <=>(Week) # Integer
+    <=>(Day || Week || Month || Year) # Integer
     inspect # String
   
   === Week
 
-    initialize(Builder, Year || Integer, Integer)
+    attr_accessor :day_class
+    initialize(Year, Integer)
     days # [Day]
     day(Integer || Symbol || String) # Day
     month # always raises
@@ -124,12 +129,12 @@
     -(by) # Week
     since(Week) # Integer
     until(Week) # Integer
-    <=>(Week) # Integer
+    <=>(Day || Week || Month || Year) # Integer
     inspect # String
   
   === Day
 
-    initialize(Builder, Year || Integer, Month || Integer || Symbol || String, Integer)
+    initialize(Year, Month, Integer)
     week # Week
     month # Month
     year # Year
@@ -149,7 +154,7 @@
     -(by) # Day    
     since(Day) # Integer
     till(Day) # Integer    
-    <=>(Week) # Integer
+    <=>(Day || Week || Month || Year) # Integer
     inspect # String
     weekday_of_month?(Hash) # Boolean
       # {1 => :mon} # first monday
@@ -171,12 +176,12 @@ days = []
   === Before:
     every 1, :months, :on => [1], :from => [2008, 11], :to => [2009, 3] { |date| }
   === After:
-    (Month(2008, 11)..Month(2009, 3)).map { |m| m.day(1).date }.each { |date| }
+    (Month(Year(2008), 11)..Month(Year(2009), 3)).map { |m| m.day(1).date }.each { |date| }
     
   === Before:
     every 1 :months, :fifth => [:tue, :fri], :third => [:mon], :from => [2008] { |date| }
   === After
-    (Day(2008, 1, 1) .. INF).each do |day|
+    (Day(Month(Year(2008), 1), 1) .. INF).each do |day|
       if day.weekday_of_month?(:fifth => [:fri, :tue], :third => :mon)
         day.date
       end
