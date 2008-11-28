@@ -67,13 +67,13 @@
   
   === Month
 
-    initialize(Year, Integer || Symbol || String)
-    to_i # January is 1
+    #initialize(Year, Integer || Symbol || String)
+    #to_i # January is 1
+    days # [Days]
+    day(Integer) # Day
     
     attr_accessor :day_class
     weeks # always raises
-    day(Integer) # Day
-    days # [Days]
     year # Year
     num_days # Integer
     to_s # "January"

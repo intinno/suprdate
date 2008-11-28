@@ -125,3 +125,15 @@ describe 'year comprised of days through months' do
   end
 
 end
+
+describe 'year clones' do
+
+  it "should hold state" do
+    a = Year.new(2000)
+    a.month_class = :foo
+    b = a + 1
+    b.month_class.should == :foo
+    b.object_id.should_not == a.object_id
+  end
+
+end

@@ -18,3 +18,9 @@ describe 'month creation' do
   end
   
 end
+
+describe 'month comprised of days' do
+
+  
+
+end

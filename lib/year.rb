@@ -13,10 +13,13 @@ class Year
       raise "Attempted to create a year valued #{v}, #{MINIMUM_VALUE - v} less than minimum allowed value of #{MINIMUM_VALUE}"
     end
     @value = v
+    self
   end
   
-  def +(by) self.class.new(@value + by) end
-  def -(by) self.class.new(@value - by) end
+  protected :initialize # for + and -
+  
+  def +(by) dup.initialize(@value + by) end
+  def -(by) dup.initialize(@value - by) end
   def <=>(compare) @value - compare.value  end
   def succ() self + 1 end
   
