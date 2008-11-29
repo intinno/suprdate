@@ -36,3 +36,31 @@ MONTH_RANGE = 1..NUM_MONTHS_IN_YEAR
 NUM_DAYS_IN_MONTHS = [nil, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 OCCURANCES = [nil, :first, :second, :third, :forth, :fifth]
 WEEKDAY_RANGE = 1..7
+
+class Builder
+  
+  attr_accessor :day_factory, :month_factory, :week_definition
+  
+  def initialize
+    @day_factory = Day
+    @month_factory = Month
+  end
+  
+  def year(value)
+    y = Year.new(value)
+    y.day_factory = @day_factory
+    y.month_factory = @month_factory
+    y
+  end
+  
+  def month(year_value, month_value)
+    m = @month_factory.new(year(year_value), month_value)
+    m.day_factory = @day_factory
+    m
+  end
+  
+  def day(year_value, month_value, day_value)
+    @day_factory.new(month(year(year_value), month_value), day_value)
+  end
+  
+end

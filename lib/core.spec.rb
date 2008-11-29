@@ -1,5 +1,7 @@
 def rand_int(size = 80_000) (rand * size).round - size / 2 end
 
+require 'core'
+
 describe 'disarray' do
 
   it "should return an array if 2 or more elements" do
@@ -50,6 +52,36 @@ describe 'self building integration' do
     
     month.day(day_value).should == mock_day
     
+  end
+
+end
+
+describe Builder do
+
+  it "should build years" do
+    year = Builder.new.year(expected = (rand * 100).round + 1700)
+    year.should be_instance_of(Year)
+    year.to_i.should == expected
+    year.month_factory.should == Month
+    year.day_factory.should == Day
+    
+    # reminds me to update the builder when I add this functionality
+    year.week_definition.should == nil
+  end
+  
+  it "should build months" do
+    month = Builder.new.month(2008, expected = (rand * 11).round + 1)
+    month.should be_instance_of(Month)
+    month.to_i.should == expected
+    month.day_factory.should == Day
+    month.year.week_definition.should == nil
+  end
+  
+  it "should build days" do
+    day = Builder.new.day(2008, 1, expected = (rand * 30).round + 1)
+    day.should be_instance_of(Day)
+    day.year.week_definition.should == nil
+    day.year.month_factory.should == Month
   end
 
 end

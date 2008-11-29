@@ -135,10 +135,9 @@ describe 'year comprised of days through months' do
       
     @month.should_receive(:days).with(no_args).
       # each month creates only two days in this example...
-      exactly(NUM_MONTHS_IN_YEAR).times.and_return Array.new(list_size = (rand * 5).round, @expected)
+      exactly(NUM_MONTHS_IN_YEAR).times.and_return Array.new(list_size = (rand * 6).round + 1, @expected)
     
     days = @year.days
-    # ...hence 24 days instead of 365
     days.nitems.should == list_size * NUM_MONTHS_IN_YEAR
     days[0].should == @expected
   end

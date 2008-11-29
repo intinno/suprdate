@@ -57,8 +57,8 @@
     #days # [Day]
     #leap? # Boolean
     #inspect # String
-    #attr_accessor :month_class
-    #              :week_class 
+    #attr_accessor :month_factory
+    #              :week_factory 
     #              :week_definition
     
     week(Integer) # Week
@@ -72,7 +72,7 @@
     #num_days # Integer
     #days # [Days]
     #day(Integer) # Day
-    #attr_accessor :day_class
+    #attr_accessor :day_factory
     #year # Year
     #to_sym # :jan
     #succ # Month
@@ -86,7 +86,7 @@
     
   === Week
 
-    attr_accessor :day_class
+    attr_accessor :day_factory
     initialize(Year, Integer)
     days # [Day]
     day(Integer || Symbol || String) # Day
@@ -183,7 +183,7 @@ end
 === Stuff To Do
 
   - Think about how the decending factories thing is working. I can't test for it any longer
-  - Change "x_class" to "x_factory"
+  - Change "x_factory" to "x_factory"
   - API documentation
   - Odd extra few comments for understandability
   - Manual
