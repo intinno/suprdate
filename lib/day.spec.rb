@@ -4,8 +4,8 @@ module DayHelpers
   
   def d(*args)
     day = make(*args)
-    day.month.day_class = Day
-    day.year.month_class = Month
+    day.month.day_factory = Day
+    day.year.month_factory = Month
     day
   end
   
@@ -117,12 +117,12 @@ describe 'day math and logic' do
     a = d(28)
     # day has no writable state of it's own but month does
     # so I'm setting a value on the month:
-    # day_class is not used in any of these operations so it's ok to abuse it
+    # day_factory is not used in any of these operations so it's ok to abuse it
     # with a nonsense value
-    a.month.day_class = :foo 
+    a.year.month_factory = :foo 
     b = a + 5 # the month and the day changed
     # but the month should still hold the original state
-    b.month.day_class.should == :foo
+    b.year.month_factory.should == :foo
     b.object_id.should_not == a.object_id
   end
   

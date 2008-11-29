@@ -1,12 +1,7 @@
 class Month
   
-  attr_accessor :day_class
+  attr_accessor :day_factory
   attr_reader :value, :year
-  
-  class << self
-    
-  end
-  
   
   def initialize(year, value)
     @year = year
@@ -30,18 +25,18 @@ class Month
   end
   
   def days
-    (1..num_days).to_a.map { |i| day_class.new(self, i) }
+    (1..num_days).to_a.map { |i| day_factory.new(self, i) }
   end
   
   def day(*ies)
-    disarray(ies.map { |i| day_class.new(self, i) })
+    disarray(ies.map { |i| day_factory.new(self, i) })
   end
   
   def leap_month?() @value == 2 && @year.leap? end
   def inspect() "#@year-#{@value.to_s.rjust(2, '0')}" end
 
   def <=>(compare)
-    (@year.value * MONTHS_IN_YEAR + @value) - (compare.year.value * MONTHS_IN_YEAR + compare.value)
+    (@year.value * NUM_MONTHS_IN_YEAR + @value) - (compare.year.value * NUM_MONTHS_IN_YEAR + compare.value)
   end
   
   def since(month) sum - month.sum end
@@ -65,11 +60,11 @@ class Month
     
     # total number of months from 0 years 0 months
     def sum
-      @year.value * MONTHS_IN_YEAR + @value - 1   
+      @year.value * NUM_MONTHS_IN_YEAR + @value - 1   
     end
     
     def new_from_sum(sum)
-      new(@year.new(sum / MONTHS_IN_YEAR), sum % MONTHS_IN_YEAR + 1)
+      new(@year.new(sum / NUM_MONTHS_IN_YEAR), sum % NUM_MONTHS_IN_YEAR + 1)
     end
   
 end

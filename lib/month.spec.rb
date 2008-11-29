@@ -40,14 +40,14 @@ describe 'month comprised of days' do
   
   def init(month)
     @month = month
-    @month.day_class = @day_class = mock('day class')
+    @month.day_factory = @day_factory = mock('day factory')
     @expected = rand_int
   end
   
   # refactor candidate: ideally this should be a special rspec expectation
   def days(month, num_days)
     init month
-    @day_class.should_receive(:new).
+    @day_factory.should_receive(:new).
       with(@month, an_instance_of(Integer)).
       exactly(num_days).times.and_return @expected
     day = @month.days
@@ -62,17 +62,10 @@ describe 'month comprised of days' do
   
   it "should provide multiple individual days on demand" do
     init m(1)
-    @day_class.should_receive(:new).with(@month, 1).once.and_return 1
-    @day_class.should_receive(:new).with(@month, 3).once.and_return 2
-    @day_class.should_receive(:new).with(@month, 5).once.and_return 3
+    @day_factory.should_receive(:new).with(@month, 1).once.and_return 1
+    @day_factory.should_receive(:new).with(@month, 3).once.and_return 2
+    @day_factory.should_receive(:new).with(@month, 5).once.and_return 3
     @month.day(1, 3, 5).should == [1, 2, 3]
-  end
-  
-  it "should be a factory for days" do
-    Month.day_class = day_class = mock 'day class'
-    month = m(1)
-    day_class.should_receive(:new).once.with_args(month, 3).and_return expected = rand_int
-    month.day(3).should == expected
   end
   
 end
@@ -103,11 +96,11 @@ describe 'month math and logic' do
 
   it "should hold state after arithmetic" do
     a = m(5)
-    # day_class is not used in any of these operations 
+    # day_factory is not used in any of these operations 
     # so it's ok to abuse it with a nonsense value
-    a.day_class = :foo
+    a.day_factory = :foo
     b = a + 1
-    b.day_class.should == :foo
+    b.day_factory.should == :foo
     b.object_id.should_not == a.object_id
   end
   

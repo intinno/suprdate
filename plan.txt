@@ -127,10 +127,6 @@
     #<=>(Day || Week || Month || Year) # Integer
     #inspect # String
     
-    weekday_of_month?(Hash) # Boolean
-      # {1 => :mon} # first monday
-      # {1 => [:mon]} # first monday
-      # {1 => [:mon, :tue]} # first tuesday
     week # Week
     
 require 'date_traversal'
@@ -169,8 +165,13 @@ days = []
     end
 
 
-=== Abstraction
+=== Specification
 
+weekday_of_month?(Hash) # Boolean
+  # {1 => :mon} # first monday
+  # {1 => [:mon]} # first monday
+  # {1 => [:mon, :tue]} # first tuesday
+  
 spec = EventSpec.new
 spec.repeats(:monthly, :from => Year(2009), :to => Year(2010))
 spec.when_day_of_month(:third => [:fri, :sat], :fifth => :mon)
@@ -181,6 +182,8 @@ end
 
 === Stuff To Do
 
+  - Think about how the decending factories thing is working. I can't test for it any longer
+  - Change "x_class" to "x_factory"
   - API documentation
   - Odd extra few comments for understandability
   - Manual

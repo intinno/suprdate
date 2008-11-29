@@ -1,7 +1,6 @@
 class Year
   
-  attr_accessor :month_class, 
-                :week_class, 
+  attr_accessor :month_factory, :day_factory, :week_factory, 
                 :week_definition
   attr_reader   :value
 
@@ -24,11 +23,17 @@ class Year
   def succ() self + 1 end
   
   def months
-    MONTH_RANGE.to_a.map { |i| month_class.new(self, i) } 
+    MONTH_RANGE.to_a.map { |i| new_month(i) } 
   end
   
   def month(*ies)
-    disarray(ies.map { |i| month_class.new(self, i) })
+    disarray(ies.map { |i| new_month(i) })
+  end
+  
+  def new_month(value)
+    month = month_factory.new(self, value)
+    month.day_factory = day_factory
+    month
   end
   
   def days() months.map { |m| m.days }.flatten end

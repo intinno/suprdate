@@ -36,11 +36,11 @@ describe 'year is like an integer' do
   
   it "should hold state after arithmetic" do
     a = Year.new(2000)
-    # month_class is not used in any of these operations 
+    # month_factory is not used in any of these operations 
     # so it's ok to abuse it with a nonsense value
-    a.month_class = :foo
+    a.month_factory = :foo
     b = a + 1
-    b.month_class.should == :foo
+    b.month_factory.should == :foo
     b.object_id.should_not == a.object_id
   end
 
@@ -52,29 +52,36 @@ describe 'year comprised of months' do
   
   before(:each) do
     @year = y
-    @expected = rand_int
-    @year.month_class = @month_class = mock('month class')
+    @year.day_factory = @mock_day_factory = mock('day factory')
+    @mock_month = mock('month')
+    @year.month_factory = @month_factory = mock('month factory')
   end
 
   it "should return an array of months" do
-    @month_class.should_receive(:new).
-      with(@year, an_instance_of(Integer)).
-      exactly(MONTHS_IN_YEAR).times.and_return @expected
+    @month_factory.should_receive(:new).with(@year, an_instance_of(Integer)).
+      exactly(NUM_MONTHS_IN_YEAR).times.and_return @mock_month
+      
+    @mock_month.should_receive(:day_factory=).with(@mock_day_factory).
+      exactly(NUM_MONTHS_IN_YEAR).times.and_return(@mock_day_factory)
+      
     months = @year.months
-    months.nitems.should == MONTHS_IN_YEAR
-    months[0].should == @expected
+    months.nitems.should == NUM_MONTHS_IN_YEAR
+    months[0].should == @mock_month
   end
   
   it "should provide individual months on demand" do
-    @month_class.should_receive(:new).with(@year, 1).once.and_return @expected
-    @year.month(1).should == @expected
+    @month_factory.should_receive(:new).with(@year, 1).once.and_return @mock_month
+    @mock_month.should_receive(:day_factory=).with(@mock_day_factory).once.and_return(@mock_day_factory)
+    @year.month(1).should == @mock_month
   end
   
   it "should provide multiple individual months on demand" do
-    @month_class.should_receive(:new).with(@year, 1).once.and_return 1
-    @month_class.should_receive(:new).with(@year, 3).once.and_return 2
-    @month_class.should_receive(:new).with(@year, 5).once.and_return 3
-    @year.month(1, 3, 5).should == [1, 2, 3]
+    @month_factory.should_receive(:new).with(@year, 1).once.and_return @mock_month
+    @month_factory.should_receive(:new).with(@year, 3).once.and_return @mock_month
+    @month_factory.should_receive(:new).with(@year, 5).once.and_return @mock_month
+    @mock_month.should_receive(:day_factory=).with(@mock_day_factory).
+      exactly(3).times.and_return(@mock_day_factory)
+    @year.month(1, 3, 5).should == Array.new(3, @mock_month)
   end
   
 end
@@ -113,23 +120,26 @@ describe 'year comprised of days through months' do
   before(:each) do
     @year = y
     @expected = rand_int
-    @year.month_class = @month_class = mock('month class')
+    @year.month_factory = @month_factory = mock('month factory')
     @month = mock('month')
   end
 
   it "should return an array of days" do
     # days can only be created through months
-    @month_class.should_receive(:new).
+    @month_factory.should_receive(:new).
       with(@year, an_instance_of(Integer)).
-      exactly(MONTHS_IN_YEAR).times.and_return(@month)
-    
+      exactly(NUM_MONTHS_IN_YEAR).times.and_return(@month)
+
+    @month.should_receive(:day_factory=).with(nil).
+      exactly(NUM_MONTHS_IN_YEAR).times.and_return(nil)
+      
     @month.should_receive(:days).with(no_args).
       # each month creates only two days in this example...
-      exactly(MONTHS_IN_YEAR).times.and_return [@expected, @expected]
+      exactly(NUM_MONTHS_IN_YEAR).times.and_return Array.new(list_size = (rand * 5).round, @expected)
     
     days = @year.days
     # ...hence 24 days instead of 365
-    days.nitems.should == 24
+    days.nitems.should == list_size * NUM_MONTHS_IN_YEAR
     days[0].should == @expected
   end
 
@@ -139,10 +149,10 @@ describe 'year copies' do
 
   it "should hold state" do
     a = Year.new(2000)
-    a.month_class = :foo
+    a.month_factory = :foo
     b= a.new(2001)
     b.object_id.should_not == a.object_id
-    b.month_class.should == a.month_class
+    b.month_factory.should == a.month_factory
   end
 
 end
