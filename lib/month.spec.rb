@@ -77,7 +77,6 @@ describe 'month math and logic' do
   it "should be comparable" do
     (m(11) == m(11)).should == true
     (m(10) == m(11)).should == false
-    (m(2000, 11) == m(2000, 11)).should == true
     (m(2001, 11) == m(2000, 11)).should == false
     (m(11) > m(12)).should == false
     (m(12) > m(11)).should == true

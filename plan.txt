@@ -106,22 +106,20 @@
   === Day
 
     #initialize(Month, Integer)
+    #year # Year
+    #month # Month
+    #time # Time
+    #date # Date
+    #days # [self]
+    #date_time # DateTime
+    #of_month # Integer of 1..31
+    #of_week_as_s # "Monday"
+    #of_week_as_sym # :mon
+    #of_week_as_i # 1
+    #of_year # Integer
+    #leap? # is February 29th? Boolean
+    #succ # Day
     
-    week # Week
-    month # Month
-    year # Year
-    date # Date
-    time # Time
-    days # [self]
-    date_time # DateTime
-    of_month # Integer of 1..31
-    of_week_as_s # "Monday"
-    of_week_as_sym # :mon
-    of_week_as_i # 1
-    of_year # Integer
-    leap? # is February 29th? Boolean
-    succ # Day
-    prev # Day
     +(Integer) # Day
     -(Integer) # Day    
     since(Day) # Integer
@@ -132,6 +130,7 @@
       # {1 => :mon} # first monday
       # {1 => [:mon]} # first monday
       # {1 => [:mon, :tue]} # first tuesday
+    week # Week
     
 require 'date_traversal'
 include DateTraversal
@@ -178,3 +177,11 @@ spec.when_day_of_month([3, 7, 8])
 spec.specified_days do |day|
 
 end
+
+=== Stuff To Do
+
+  - API documentation
+  - Odd extra few comments for understandability
+  - Manual
+  - Packaging
+  - GitHub / RubyForge / Google Code / Gem

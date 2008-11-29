@@ -5,6 +5,7 @@ WEEKDAYS_SYM_TO_I = {
   :fri => 5, :sat => 6, :sun => 7
 }
 WEEKDAYS_I_TO_SYM = [nil, :mon, :tue, :wed, :thu, :fri, :sat, :sun]
+WEEKDAYS_I_TO_STRING = [nil, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 WEEKDAY_RANGE = 1..7
 
 MONTH_SYM_TO_I = {
@@ -13,12 +14,15 @@ MONTH_SYM_TO_I = {
   :jul => 7,    :aug => 8,    :sep => 9,
   :oct => 10,   :nov => 11,   :dec => 12,
 }
-MONTH_I_TO_SYM = {
-  1  => :jan,   2  => :feb,   3  => :mar,
-  4  => :apr,   5  => :may,   6  => :jun,
-  7  => :jul,   8  => :aug,   9  => :sep,
-  10 => :oct,   11 => :nov,   12 => :dec,
-}
+MONTH_I_TO_SYM = [
+  nil, :jan, :feb, :mar, :apr, :may, :jun, :jul,
+  :aug, :sep, :oct, :nov, :dec
+]
+MONTH_I_TO_STRING = [
+  nil, 'January', 'February', 'March', 'April', 
+  'May', 'June', 'July', 'August', 'September', 
+  'October', 'November', 'December'
+]
 MONTHS_IN_YEAR = 12
 MONTH_RANGE = 1..MONTHS_IN_YEAR
 NUM_DAYS_IN_MONTHS = [nil, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]

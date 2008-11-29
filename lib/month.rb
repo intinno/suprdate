@@ -44,11 +44,14 @@ class Month
   def +(by) new_from_sum(sum + by) end
   def -(by) new_from_sum(sum - by) end
   def succ() self + 1 end
+  def of_year_as_sym() MONTH_I_TO_SYM[@value] end
+  def of_year_as_s() MONTH_I_TO_STRING[@value] end
   
   # dup this object and give it a new value
   def new(*args) dup.initialize(*args) end
 
   alias :to_i :value
+  alias :of_year_as_i :value
   alias :to_s :inspect
   
   include Comparable
