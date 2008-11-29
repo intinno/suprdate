@@ -3,6 +3,11 @@ class Month
   attr_accessor :day_class
   attr_reader :value, :year
   
+  class << self
+    
+  end
+  
+  
   def initialize(year, value)
     @year = year
     @value = if value.kind_of?(Symbol)
@@ -53,7 +58,7 @@ class Month
   alias :to_i :value
   alias :of_year_as_i :value
   alias :to_s :inspect
-  
+  alias :[] :day
   include Comparable
   
   protected

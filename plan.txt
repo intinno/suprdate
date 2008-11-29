@@ -78,11 +78,12 @@
     #succ # Month
     #+(Integer) # Month
     #-(Integer) # Month
-    #<=>(Day || Week || Month || Year) # Integer
     #inspect # String
     #since(Month) # Integer
     #until(Month) # Integer
   
+    <=>(Day || Week || Month || Year) # Integer
+    
   === Week
 
     attr_accessor :day_class
@@ -119,13 +120,13 @@
     #of_year # Integer
     #leap? # is February 29th? Boolean
     #succ # Day
+    #+(Integer) # Day
+    #-(Integer) # Day    
+    #since(Day) # Integer
+    #till(Day) # Integer    
+    #<=>(Day || Week || Month || Year) # Integer
+    #inspect # String
     
-    +(Integer) # Day
-    -(Integer) # Day    
-    since(Day) # Integer
-    till(Day) # Integer    
-    <=>(Day || Week || Month || Year) # Integer
-    inspect # String
     weekday_of_month?(Hash) # Boolean
       # {1 => :mon} # first monday
       # {1 => [:mon]} # first monday

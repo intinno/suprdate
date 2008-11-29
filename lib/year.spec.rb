@@ -36,6 +36,8 @@ describe 'year is like an integer' do
   
   it "should hold state after arithmetic" do
     a = Year.new(2000)
+    # month_class is not used in any of these operations 
+    # so it's ok to abuse it with a nonsense value
     a.month_class = :foo
     b = a + 1
     b.month_class.should == :foo

@@ -5,7 +5,7 @@ class Year
                 :week_definition
   attr_reader   :value
 
-  MINIMUM_VALUE = 1582 # year when leap years first came to be standardized
+  MINIMUM_VALUE = 1582 # year when leap years were first standardized
 
   def initialize(v) 
     v = v.to_i
@@ -31,9 +31,7 @@ class Year
     disarray(ies.map { |i| month_class.new(self, i) })
   end
   
-  def days
-    months.map { |m| m.days }.flatten
-  end
+  def days() months.map { |m| m.days }.flatten end
   
   def leap?
     return true  if @value % 400 == 0 
@@ -43,15 +41,14 @@ class Year
   end
   
   def inspect() @value.to_s end
-    
   # dup this object and give it a new value
   def new(*args) dup.initialize(*args) end
-  
-  include Comparable
   
   alias :to_i :value
   alias :since :-
   alias :until :+
   alias :to_s :inspect
+  alias :[] :month
+  include Comparable
   
 end

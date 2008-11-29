@@ -68,6 +68,13 @@ describe 'month comprised of days' do
     @month.day(1, 3, 5).should == [1, 2, 3]
   end
   
+  it "should be a factory for days" do
+    Month.day_class = day_class = mock 'day class'
+    month = m(1)
+    day_class.should_receive(:new).once.with_args(month, 3).and_return expected = rand_int
+    month.day(3).should == expected
+  end
+  
 end
 
 describe 'month math and logic' do
@@ -84,18 +91,20 @@ describe 'month math and logic' do
     (m(2000, 11) > m(2001, 11)).should == false
   end
   
-  it "should be able to add integers to months" do
+  it "should be able to add with integers" do
     (m(11) + 1).should == m(12)
     (m(1999, 11) + 2).should == m(2000, 1)
   end
   
-  it "should be able to subtract integers from months" do
+  it "should be able to subtract with integers " do
     (m(2001, 5) - 3).should == m(2001, 2)
     (m(2001, 1) - 1).should == m(2000, 12)
   end
 
   it "should hold state after arithmetic" do
     a = m(5)
+    # day_class is not used in any of these operations 
+    # so it's ok to abuse it with a nonsense value
     a.day_class = :foo
     b = a + 1
     b.day_class.should == :foo
