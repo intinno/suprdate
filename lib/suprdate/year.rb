@@ -19,9 +19,10 @@ module Suprdate
   
     protected :initialize # for + and -
     
-    def <=>(compare) 
-      compare = compare.year
-      @value - compare.value
+    def <=>(opperand) 
+      return -1 if opperand == Inf
+      opperand = opperand.year
+      @value - opperand.value
     end
   
     def month(*ies)
@@ -29,8 +30,8 @@ module Suprdate
       disarray(ies.map { |i| new_month(i) })
     end
   
-    def +(by) new(@value + by) end
-    def -(by) new(@value - by) end
+    def +(increase) new(@value + increase) end
+    def -(decrease) new(@value - decrease) end
     def succ() self + 1 end
     def months() MONTH_RANGE.to_a.map { |i| new_month(i) }  end
     def days() months.map { |m| m.days }.flatten end
@@ -54,7 +55,7 @@ module Suprdate
       
     # dup this object and give it a new value
     def new(*args) dup.initialize(*args) end
-  
+      
     protected
 
     def new_month(value)

@@ -1,8 +1,13 @@
 def rand_int(size = 80_000) (rand * size).round - size / 2 end
 
+# lazy typist
+alias :y :Year
+alias :m :Month
+alias :d :Day
+
 describe 'disarray' do
 
-  it "should return an array if 2 or more elements" do
+  it "should return unaltered array if 2 or more elements" do
     disarray(array = Array.new(2)).should == array
     disarray(array = Array.new(5)).should == array
     disarray(array = Array.new(10)).should == array

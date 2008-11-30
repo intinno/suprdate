@@ -26,11 +26,15 @@ module Suprdate
     def of_year() (date - Date.new(year.value, 1, 1)).numerator + 1 end
     def leap?() value == 29 && @month.value == 2 end
     def succ() self + 1 end
-    def <=>(compare) date <=> compare.day.date end
-    def +(by) new_from_date(date + by) end
-    def -(by) new_from_date(date - by) end
+    def +(increase) new_from_date(date + increase) end
+    def -(decrease) new_from_date(date - decrease) end
     def since(day) (date - day.date).numerator end
     def until(day) (day.date - date).numerator end
+      
+    def <=>(opperand) 
+      return -1 if opperand == Inf
+      date <=> opperand.day.date 
+    end
     
     def weekday_occurance_this_month
       w = of_week_as_i

@@ -6,6 +6,7 @@ module Suprdate
   require LIB_DIR + "/suprdate/day"
   require LIB_DIR + "/suprdate/month"
   require LIB_DIR + "/suprdate/year"
+  require LIB_DIR + "/suprdate/occurrence_spec"
 
   WEEKDAYS_SYM_TO_I = {
     :mon => 1, :tue => 2, :wed => 3, :thu => 4, 
@@ -114,9 +115,7 @@ module Suprdate
   end
   
   module Inf
-    
     def self.method_missing(*args) self end
-    
   end
   
 end
