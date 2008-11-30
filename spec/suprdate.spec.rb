@@ -1,7 +1,5 @@
 def rand_int(size = 80_000) (rand * size).round - size / 2 end
 
-require 'core'
-
 describe 'disarray' do
 
   it "should return an array if 2 or more elements" do
@@ -18,10 +16,6 @@ describe 'disarray' do
 end
 
 describe 'self building integration' do
-
-  require 'year'
-  require 'month'
-  require 'day'
 
   it "should allow years to build months and month to build days" do
     
@@ -82,6 +76,33 @@ describe Builder do
     day.should be_instance_of(Day)
     day.year.week_definition.should == nil
     day.year.month_factory.should == Month
+  end
+
+end
+
+describe 'every' do
+
+  it "should filter lists by integer and symbol" do
+    list = (1..10).to_a
+    every(1, list).should == list
+    every(2, list).should == [1, 3, 5, 7, 9]
+    every(3, list).should == third = [1, 4, 7, 10]
+    every(4, list).should == [1, 5, 9]
+    every(:third, list).should == third
+  end
+
+end
+
+describe 'exported builder methods' do
+  
+  def method_exists(method)
+    methods.find { |m| m == method }.should_not be_nil
+  end
+
+  it "should be defined" do
+    method_exists 'year'
+    method_exists 'month'
+    method_exists 'day'
   end
 
 end

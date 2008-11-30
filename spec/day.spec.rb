@@ -1,5 +1,3 @@
-require 'day'
-
 module DayHelpers
   
   def d(*args)
@@ -11,11 +9,11 @@ module DayHelpers
   
   private 
   
-    def make(a, b = nil, c = nil)
-      return Day.new(Month.new(Year.new(a), b), c) if c
-      return Day.new(Month.new(Year.new(2000), a), b) if b
-      Day.new(Month.new(Year.new(2000), 1), a)
-    end
+  def make(a, b = nil, c = nil)
+    return Day.new(Month.new(Year.new(a), b), c) if c
+    return Day.new(Month.new(Year.new(2000), a), b) if b
+    Day.new(Month.new(Year.new(2000), 1), a)
+  end
 end
 
 describe 'day creation' do

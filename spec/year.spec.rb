@@ -1,10 +1,7 @@
-require 'core'
-require 'year'
-
 module YearHelpers
   
   def y_rand_int() (rand * 8000).round + 1600 end
-  def y(x = 1600) Year.new(x) end
+  def y(value = 1600) Year.new(value) end
   
 end
 

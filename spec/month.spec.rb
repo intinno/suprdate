@@ -1,5 +1,3 @@
-require 'month'
-
 module MonthHelpers
   
   # ollie, lleeaavve it!

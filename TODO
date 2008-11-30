@@ -1,0 +1,93 @@
+=== Supadate
+
+  === INF
+  
+    <=> # -1
+    succ # dummy
+    
+  === WeekDefinition
+  
+    year_from_week(Week) # Year
+    weeks_of_year(Year) # [Week]
+    week_start_offset # Integer
+    def use!
+      ::DEFAULT_BUILDER.week_definition = self
+    end
+    
+    # singleton instances
+    
+      ISO8601_WEEK
+      USA_WEEK
+      UK_WEEK
+    
+  === Builder
+  
+    week_definition
+    week_definition=
+    year
+    day
+    month
+    week
+    d
+    
+  === Year
+
+    week(Integer) # Week
+    weeks # [Week]
+    <=>(Day || Week || Month || Year) # Integer
+  
+  === Month
+
+    <=>(Day || Week || Month || Year) # Integer
+    
+  === Week
+
+    attr_accessor :day_factory
+    initialize(Year, Integer)
+    days # [Day]
+    day(Integer || Symbol || String) # Day
+    month # always raises
+    year # Year
+    num_years_spanned # 1 || 2
+    num_months_spanned # 1 || 2
+    of_year # Integer
+    succ # Week
+    prev # Week
+    +(Integer) # Week
+    -(Integer) # Week
+    since(Week) # Integer
+    until(Week) # Integer
+    <=>(Day || Week || Month || Year) # Integer
+    inspect # String
+  
+  === Day
+
+    week # Week
+    
+require 'suprdate'
+include Suprdate
+ISO8601_WEEK.use!
+
+
+=== Specification
+
+weekday_of_month?(Hash) # Boolean
+  # {1 => :mon} # first monday
+  # {1 => [:mon]} # first monday
+  # {1 => [:mon, :tue]} # first tuesday
+  
+spec = EventSpec.new
+spec.repeats(:monthly, :from => Year(2009), :to => Year(2010))
+spec.when_day_of_month(:third => [:fri, :sat], :fifth => :mon)
+spec.when_day_of_month([3, 7, 8])
+spec.specified_days do |day|
+
+end
+
+=== Stuff To Do
+
+  - API documentation
+  - Odd extra few comments for improving comprehensibility
+  - Manual
+  - Packaging
+  - GitHub / RubyForge / Google Code / Gem
