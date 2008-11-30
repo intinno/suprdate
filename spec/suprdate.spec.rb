@@ -95,14 +95,20 @@ end
 
 describe 'exported builder methods' do
   
-  def method_exists(method)
-    methods.find { |m| m == method }.should_not be_nil
-  end
-
   it "should be defined" do
-    method_exists 'year'
-    method_exists 'month'
-    method_exists 'day'
+    respond_to?(:Year).should == true
+    respond_to?(:Month).should == true
+    respond_to?(:Day).should == true
+    Day(2008, 10, 10).should == DEFAULT_BUILDER.day(2008, 10, 10)
   end
 
+end
+
+describe Inf do
+
+  it "should return itself from unknown calls" do
+    Inf.foo.should == Inf
+    Inf.bar.should == Inf
+  end
+  
 end

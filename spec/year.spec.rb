@@ -72,6 +72,12 @@ describe 'year comprised of months' do
     @year.month(1).should == @mock_month
   end
   
+  it "should provide month 1 when no month value actually specified" do
+    @month_factory.should_receive(:new).with(@year, 1).once.and_return @mock_month
+    @mock_month.should_receive(:day_factory=).with(@mock_day_factory).once.and_return(@mock_day_factory)
+    @year.month.should == @mock_month
+  end
+  
   it "should provide multiple individual months on demand" do
     @month_factory.should_receive(:new).with(@year, 1).once.and_return @mock_month
     @month_factory.should_receive(:new).with(@year, 3).once.and_return @mock_month

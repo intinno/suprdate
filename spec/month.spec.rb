@@ -66,6 +66,12 @@ describe 'month comprised of days' do
     @month.day(1, 3, 5).should == [1, 2, 3]
   end
   
+  it "should provide day 1 when no day value actually specified" do
+    init m(1)
+    @day_factory.should_receive(:new).with(@month, 1).once.and_return @expected
+    @month.day.should == @expected
+  end
+  
 end
 
 describe 'month math and logic' do

@@ -81,10 +81,8 @@ module Suprdate
     end
     
     # returns the names of the methods that actually build stuff
-    def building_methods
-      (methods - self.class.superclass.instance_methods).reject do |method_name|
-        method_name =~ /_/
-      end
+    def self.building_methods
+      (instance_methods - superclass.instance_methods).reject { |name| name =~ /_/ }
     end
   
   end
@@ -92,8 +90,8 @@ module Suprdate
   DEFAULT_BUILDER = Builder.new
 
   # defines the important methods of DEFAULT_BUILDER as stand alone module methods
-  DEFAULT_BUILDER.building_methods.each do |method| 
-    eval "def #{method}(*args) DEFAULT_BUILDER.#{method}(*args) end"
+  Builder.building_methods.each do |name| 
+    define_method(name.capitalize) { |*args| DEFAULT_BUILDER.send(name, *args) }
   end
 
   # disposes of the array that wraps a single element returns array otherwise
@@ -113,6 +111,12 @@ module Suprdate
       block.call(value) if key % freq == 0
     end
     out
+  end
+  
+  module Inf
+    
+    def self.method_missing(*args) self end
+    
   end
   
 end

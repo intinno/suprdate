@@ -19,13 +19,14 @@ module Suprdate
     def date() Date.new(*values) end
     def datetime() DateTime.new(*values) end
     def days() [self] end
+    def day() self end
     def of_week_as_sym() WEEKDAYS_I_TO_SYM[of_week_as_i] end
     def of_week_as_s() WEEKDAYS_I_TO_STRING[of_week_as_i] end
     def of_week_as_i() date.wday + 1 end
     def of_year() (date - Date.new(year.value, 1, 1)).numerator + 1 end
     def leap?() value == 29 && @month.value == 2 end
     def succ() self + 1 end
-    def <=>(compare) date <=> compare.date end
+    def <=>(compare) date <=> compare.day.date end
     def +(by) new_from_date(date + by) end
     def -(by) new_from_date(date - by) end
     def since(day) (date - day.date).numerator end
@@ -48,8 +49,10 @@ module Suprdate
     private
     
     def values() [year.value, @month.value, value] end
+      
     # dup this object and give it a new value
     def new(*args) dup.initialize(*args) end
+      
     def new_from_date(date)
       new(@month.new(year.new(date.year), date.month), date.day)
     end

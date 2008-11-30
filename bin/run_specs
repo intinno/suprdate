@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'spec'
+require File.expand_path(File.join(File.dirname(__FILE__), "..")) + '/lib/suprdate'
+include Suprdate
+
+def specs(list)
+  list.each { |file| require "#{BASE_DIR}/spec/#{file}.spec" }
+end
+
+specs %w{
+  suprdate
+  day
+  month
+  year
+  inter_class_ranges
+}
+
+Spec::Runner::ExampleGroupRunner.new(Spec::Runner.options)

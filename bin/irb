@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'irb'
+require File.expand_path(File.join(File.dirname(__FILE__), "..")) + '/lib/suprdate'
+include Suprdate
+IRB.start

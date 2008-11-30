@@ -31,6 +31,7 @@ module Suprdate
     end
   
     def day(*ies)
+      ies = [1] if ies.empty?
       disarray(ies.map { |i| day_factory.new(self, i) })
     end
   
@@ -38,6 +39,7 @@ module Suprdate
     def inspect() "#@year-#{@value.to_s.rjust(2, '0')}" end
 
     def <=>(compare)
+      compare = compare.month
       (@year.value * NUM_MONTHS_IN_YEAR + @value) - (compare.year.value * NUM_MONTHS_IN_YEAR + compare.value)
     end
   
@@ -48,16 +50,17 @@ module Suprdate
     def succ() self + 1 end
     def of_year_as_sym() MONTH_I_TO_SYM[@value] end
     def of_year_as_s() MONTH_I_TO_STRING[@value] end
+    def month() self end
   
-    # dup this object and give it a new value
-    def new(*args) dup.initialize(*args) end
-
     alias :to_i :value
     alias :of_year_as_i :value
     alias :to_s :inspect
     alias :[] :day
     include Comparable
   
+    # dup this object and give it a new value
+    def new(*args) dup.initialize(*args) end
+
     protected
     
     # total number of months from 0 years 0 months

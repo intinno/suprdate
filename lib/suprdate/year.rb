@@ -19,26 +19,24 @@ module Suprdate
   
     protected :initialize # for + and -
     
-    def +(by) new(@value + by) end
-    def -(by) new(@value - by) end
-    def <=>(compare) @value - compare.value  end
-    def succ() self + 1 end
-  
-    def months
-      MONTH_RANGE.to_a.map { |i| new_month(i) } 
+    def <=>(compare) 
+      compare = compare.year
+      @value - compare.value
     end
   
     def month(*ies)
+      ies = [1] if ies.empty?
       disarray(ies.map { |i| new_month(i) })
     end
   
-    def new_month(value)
-      month = month_factory.new(self, value)
-      month.day_factory = day_factory
-      month
-    end
-  
+    def +(by) new(@value + by) end
+    def -(by) new(@value - by) end
+    def succ() self + 1 end
+    def months() MONTH_RANGE.to_a.map { |i| new_month(i) }  end
     def days() months.map { |m| m.days }.flatten end
+    def day(*args) month(1).day(*args) end
+    def inspect() @value.to_s end
+    def year() self end
   
     def leap?
       return true  if @value % 400 == 0 
@@ -46,10 +44,6 @@ module Suprdate
       return true  if @value % 4   == 0 
       false
     end
-    
-    def inspect() @value.to_s end
-    # dup this object and give it a new value
-    def new(*args) dup.initialize(*args) end
   
     alias :to_i :value
     alias :since :-
@@ -57,7 +51,18 @@ module Suprdate
     alias :to_s :inspect
     alias :[] :month
     include Comparable
+      
+    # dup this object and give it a new value
+    def new(*args) dup.initialize(*args) end
   
+    protected
+
+    def new_month(value)
+      month = month_factory.new(self, value)
+      month.day_factory = day_factory
+      month
+    end
+    
   end
   
 end
