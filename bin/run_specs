@@ -4,6 +4,13 @@ require 'spec'
 require File.expand_path(File.join(File.dirname(__FILE__), "..")) + '/lib/suprdate'
 include Suprdate
 
+def rand_int(size = 80_000) (rand * size).round - size / 2 end
+
+# lazy typist
+alias :y :Year
+alias :m :Month
+alias :d :Day
+
 def specs(list)
   list.each { |file| require "#{BASE_DIR}/spec/#{file}.spec" }
 end

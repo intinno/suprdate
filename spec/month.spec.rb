@@ -66,6 +66,13 @@ describe 'month comprised of days' do
     @month.day(1, 3, 5).should == [1, 2, 3]
   end
   
+  it "should provide multiple individual days on demand specified with negative offset" do
+    init m(1)
+    @day_factory.should_receive(:new).with(@month, 31).once.and_return :foo
+    @day_factory.should_receive(:new).with(@month, 29).once.and_return :bar
+    @month.day(-1, -3).should == [:foo, :bar]
+  end
+  
   it "should provide day 1 when no day value actually specified" do
     init m(1)
     @day_factory.should_receive(:new).with(@month, 1).once.and_return @expected
@@ -117,6 +124,16 @@ describe 'month math and logic' do
     m(2000, 1).since(m(1999, 1)).should == 12
     m(1).until(m(3)).should == 2
     m(1999, 1).until(m(2000, 1)).should == 12
+  end
+
+  it "should be able to get months since and until years" do
+    m(3).since(y).should == 12 - 3
+    m(10).until(y + 1).should == 3
+  end
+  
+  it "should not permit you to get months since or until days" do
+    lambda { m.since(d) }.should raise_error
+    lambda { m.until(d) }.should raise_error
   end
 
 end

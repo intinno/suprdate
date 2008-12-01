@@ -38,6 +38,8 @@ module Suprdate
     def day(*args) month(1).day(*args) end
     def inspect() @value.to_s end
     def year() self end
+    def since(year) @value - year.value end
+    def until(year) year.value - @value end
   
     def leap?
       return true  if @value % 400 == 0 
@@ -47,8 +49,6 @@ module Suprdate
     end
   
     alias :to_i :value
-    alias :since :-
-    alias :until :+
     alias :to_s :inspect
     alias :[] :month
     include Comparable

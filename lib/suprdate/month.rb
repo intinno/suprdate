@@ -32,7 +32,10 @@ module Suprdate
   
     def day(*ies)
       ies = [1] if ies.empty?
-      disarray(ies.map { |i| day_factory.new(self, i) })
+      disarray(ies.map do |i|
+        i = num_days + i + 1 if i < 0
+        day_factory.new(self, i)
+      end)
     end
   
     def leap_month?() @value == 2 && @year.leap? end

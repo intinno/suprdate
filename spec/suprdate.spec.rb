@@ -1,10 +1,3 @@
-def rand_int(size = 80_000) (rand * size).round - size / 2 end
-
-# lazy typist
-alias :y :Year
-alias :m :Month
-alias :d :Day
-
 describe 'disarray' do
 
   it "should return unaltered array if 2 or more elements" do
@@ -47,7 +40,7 @@ describe 'self building integration' do
     month.day_factory = mock_day_factory = mock('day factory')
     
     mock_day_factory.should_receive(:new).once.
-      with(month, day_value = rand_int).and_return(mock_day = rand_int)
+      with(month, day_value = rand_int.abs).and_return(mock_day = rand_int)
     
     month.day(day_value).should == mock_day
     

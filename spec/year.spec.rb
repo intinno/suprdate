@@ -40,6 +40,18 @@ describe 'year is like an integer' do
     b.month_factory.should == :foo
     b.object_id.should_not == a.object_id
   end
+  
+  it "should be able to get years since and until other years" do
+    y(2005).since(y(2000)).should == 5
+    y(2000).until(y(2005)).should == 5
+  end
+  
+  it "should not permit you to get years since or until months or days" do
+    lambda { y.since(d) }.should raise_error
+    lambda { y.until(d) }.should raise_error
+    lambda { y.since(m) }.should raise_error
+    lambda { y.until(m) }.should raise_error
+  end
 
 end
 

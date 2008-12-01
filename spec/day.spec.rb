@@ -135,4 +135,11 @@ describe 'day math and logic' do
     d(1, 1).until(d(2, 1)).should == 31
   end
 
+  it "should be able to get days since and until other months and years" do
+    d(3).since(m(2)).should == 29
+    d(3).since(y(2001)).should == 366 - 3
+    d(2008, 3, 3).since(m(2008, 3)).should == 2
+    d(2008, 1, 3).since(y(2008)).should == 2
+  end
+
 end
