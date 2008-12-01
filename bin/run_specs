@@ -7,29 +7,9 @@ include Suprdate
 def rand_int(size = 80_000) (rand * size).round - size / 2 end
 def y_rand_int() (rand * 8000).round + 1600 end
 
-# TODO: make the default values here consistent
-# TODO: make the parameter names here consistent
-# TODO: alias these to the builder?
-
-def y(value) 
-  out = Year.new(value) 
-  out.day_factory = Day
-  out.month_factory = Month
-  out
-end
-
-def m(year_int, value)
-  out = Month.new(Year.new(year_int), value)
-  out.day_factory = Day
-  out
-end
-
-def d(a, b, c)
-  day = Day.new(Month.new(Year.new(a), b), c)
-  day.month.day_factory = Day
-  day.year.month_factory = Month
-  day
-end
+alias :d :Day
+alias :m :Month
+alias :y :Year
 
 def require_specs(list)
   list.each { |file| require "#{BASE_DIR}/spec/#{file}.spec" }
