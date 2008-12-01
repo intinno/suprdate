@@ -49,7 +49,7 @@ end
 describe 'year comprised of months' do
 
   before(:each) do
-    @year = y
+    @year = y(2000)
     @year.day_factory = @mock_day_factory = mock('day factory')
     @mock_month = mock('month')
     @year.month_factory = @month_factory = mock('month factory')
@@ -118,7 +118,7 @@ describe 'year comprised of days (via months)' do
   LEAP = true
 
   before(:each) do
-    @year = y
+    @year = y(2000)
     @expected = rand_int
     @year.month_factory = @month_factory = mock('month factory')
     @month = mock('month')

@@ -1,9 +1,9 @@
 describe 'day creation' do
 
   it "should work from an integer" do
-    d(1).to_s.should == '2000-01-01'
-    d(8).to_s.should == '2000-01-08'
-    d(2, 3).to_s.should == '2000-02-03'
+    d(2000, 1, 1).to_s.should == '2000-01-01'
+    d(2000, 1, 8).to_s.should == '2000-01-08'
+    d(2000, 2, 3).to_s.should == '2000-02-03'
     d(1999, 3, 4).to_s.should == '1999-03-04'
   end
   
@@ -59,20 +59,20 @@ end
 describe 'day math and logic' do
 
   it "should be comparable" do
-    (d(21) == d(21)).should == true
-    (d(20) == d(21)).should == false
-    (d(6, 21) == d(5, 21)).should == false
+    (d(2000, 1, 21) == d(2000, 1, 21)).should == true
+    (d(2000, 1, 20) == d(2000, 1, 21)).should == false
+    (d(2000, 6, 21) == d(2000, 5, 21)).should == false
     (d(2000, 5, 21) == d(2001, 5, 21)).should == false
-    (d(21) > d(22)).should == false
-    (d(22) > d(21)).should == true
-    (d(6, 21) > d(5, 21)).should == true
-    (d(5, 21) > d(6, 21)).should == false
+    (d(2000, 1, 21) > d(2000, 1, 22)).should == false
+    (d(2000, 1, 22) > d(2000, 1, 21)).should == true
+    (d(2000, 6, 21) > d(2000, 5, 21)).should == true
+    (d(2000, 5, 21) > d(2000, 6, 21)).should == false
     (d(2000, 5, 21) > d(2001, 5, 21)).should == false
     (d(2001, 5, 21) > d(2000, 5, 21)).should == true
   end
   
   it "should be able to add with integers" do
-    (d(11) + 1).should == d(12)
+    (d(2000, 1, 11) + 1).should == d(2000, 1, 12)
     (d(1999, 12, 31) + 1).should == d(2000, 1, 1)
     # accounts for leap
     (d(2000, 2, 28) + 2).should == d(2000, 3, 1)
@@ -80,7 +80,7 @@ describe 'day math and logic' do
   end
   
   it "should be able to subtract with integers" do
-    (d(12) - 1).should == d(11)
+    (d(2000, 1, 12) - 1).should == d(2000, 1, 11)
     (d(2000, 1, 1) - 1).should == d(1999, 12, 31)
     # accounts for leap
     (d(2000, 3, 1) - 2).should == d(2000, 2, 28)
@@ -88,7 +88,7 @@ describe 'day math and logic' do
   end
 
   it "should hold state after arithmetic" do
-    a = d(28)
+    a = d(2000, 1, 28)
     # day has no writable state of it's own but month does
     # so I'm setting a value on the month:
     # day_factory is not used in any of these operations so it's ok to abuse it
@@ -101,14 +101,14 @@ describe 'day math and logic' do
   end
   
   it "should be rangeable" do
-    (d(1)..d(4)).to_a.should == [d(1), d(2), d(3), d(4)]
+    (d(2000, 1, 1)..d(2000, 1, 4)).to_a.should == [d(2000, 1, 1), d(2000, 1, 2), d(2000, 1, 3), d(2000, 1, 4)]
   end
   
   it "should be able to get days since and until other days" do
-    d(3).since(d(1)).should == 2
-    d(2, 1).since(d(1, 1)).should == 31
-    d(1).until(d(3)).should == 2
-    d(1, 1).until(d(2, 1)).should == 31
+    d(2000, 1, 3).since(d(2000, 1, 1)).should == 2
+    d(2000, 2, 1).since(d(2000, 1, 1)).should == 31
+    d(2000, 1, 1).until(d(2000, 1, 3)).should == 2
+    d(2000, 1, 1).until(d(2000, 2, 1)).should == 31
   end
 
   it "should be able to get days since and until other months and years" do

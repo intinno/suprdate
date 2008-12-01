@@ -9,35 +9,26 @@ def y_rand_int() (rand * 8000).round + 1600 end
 
 # TODO: make the default values here consistent
 # TODO: make the parameter names here consistent
+# TODO: alias these to the builder?
 
-def y(value = 1600) 
+def y(value) 
   out = Year.new(value) 
   out.day_factory = Day
   out.month_factory = Month
   out
 end
 
-def m(a, b = nil)
-  out = if b.nil?
-    Month.new(Year.new(2001), a) 
-  else 
-    Month.new(Year.new(a), b)
-  end
+def m(year_int, value)
+  out = Month.new(Year.new(year_int), value)
   out.day_factory = Day
   out
 end
 
-def d(*args)
-  day = make(*args)
+def d(a, b, c)
+  day = Day.new(Month.new(Year.new(a), b), c)
   day.month.day_factory = Day
   day.year.month_factory = Month
   day
-end
-
-def make(a, b = nil, c = nil)
-  return Day.new(Month.new(Year.new(a), b), c) if c
-  return Day.new(Month.new(Year.new(2000), a), b) if b
-  Day.new(Month.new(Year.new(2000), 1), a)
 end
 
 def require_specs(list)
