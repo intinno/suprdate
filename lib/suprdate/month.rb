@@ -47,8 +47,8 @@ module Suprdate
       (@year.value * NUM_MONTHS_IN_YEAR + @value) - (opperand.year.value * NUM_MONTHS_IN_YEAR + opperand.value)
     end
   
-    def since(month) sum - month.sum end
-    def until(month) month.sum - sum end
+    def since(opperand) sum - opperand.month.sum end
+    def until(opperand) opperand.month.sum - sum end
     def +(increase) new_from_sum(sum + increase) end
     def -(decrease) new_from_sum(sum - decrease) end
     def succ() self + 1 end

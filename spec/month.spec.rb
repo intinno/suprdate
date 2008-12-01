@@ -1,16 +1,4 @@
-module MonthHelpers
-  
-  # ollie, lleeaavve it!
-  def m(a, b = nil)
-    return Month.new(Year.new(2001), a) if b.nil?
-    Month.new(Year.new(a), b)
-  end
-  
-end
-
 describe 'month creation' do
-
-  include MonthHelpers
 
   it "should work from an integer" do
     m(1).to_sym.should == :jan
@@ -27,8 +15,6 @@ end
 
 describe 'month comprised of days' do
 
-  include MonthHelpers
-  
   it "should know number of days" do
     m(11).num_days.should == 30
     m(12).num_days.should == 31
@@ -83,8 +69,6 @@ end
 
 describe 'month math and logic' do
 
-  include MonthHelpers
-
   it "should be comparable" do
     (m(11) == m(11)).should == true
     (m(10) == m(11)).should == false
@@ -127,8 +111,8 @@ describe 'month math and logic' do
   end
 
   it "should be able to get months since and until years" do
-    m(3).since(y).should == 12 - 3
-    m(10).until(y + 1).should == 3
+    m(2000, 3).since(y(2000)).should == 2
+    m(2000, 10).until(y(2001)).should == 3
   end
   
   it "should not permit you to get months since or until days" do

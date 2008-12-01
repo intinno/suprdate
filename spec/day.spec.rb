@@ -1,25 +1,5 @@
-module DayHelpers
-  
-  def d(*args)
-    day = make(*args)
-    day.month.day_factory = Day
-    day.year.month_factory = Month
-    day
-  end
-  
-  private 
-  
-  def make(a, b = nil, c = nil)
-    return Day.new(Month.new(Year.new(a), b), c) if c
-    return Day.new(Month.new(Year.new(2000), a), b) if b
-    Day.new(Month.new(Year.new(2000), 1), a)
-  end
-end
-
 describe 'day creation' do
 
-  include DayHelpers
-  
   it "should work from an integer" do
     d(1).to_s.should == '2000-01-01'
     d(8).to_s.should == '2000-01-08'
@@ -36,8 +16,6 @@ describe 'day creation' do
 end
 
 describe 'various day readers' do
-
-  include DayHelpers
 
   it "should give you the day of the year" do
     d(2000, 1, 1).of_year.should == 1
@@ -79,8 +57,6 @@ describe 'various day readers' do
 end
 
 describe 'day math and logic' do
-
-  include DayHelpers
 
   it "should be comparable" do
     (d(21) == d(21)).should == true
@@ -136,10 +112,10 @@ describe 'day math and logic' do
   end
 
   it "should be able to get days since and until other months and years" do
-    d(3).since(m(2)).should == 29
-    d(3).since(y(2001)).should == 366 - 3
-    d(2008, 3, 3).since(m(2008, 3)).should == 2
-    d(2008, 1, 3).since(y(2008)).should == 2
+    d(2000, 1, 3).since(m(2000, 1)).should == 2
+    d(2000, 1, 3).since(y(2000)).should == 2
+    d(2000, 3, 3).since(m(2000, 3)).should == 2
+    d(2000, 1, 3).since(y(2000)).should == 2
   end
 
 end

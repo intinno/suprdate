@@ -5,20 +5,52 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..")) + '/lib/suprda
 include Suprdate
 
 def rand_int(size = 80_000) (rand * size).round - size / 2 end
+def y_rand_int() (rand * 8000).round + 1600 end
 
-# lazy typist
-alias :y :Year
-alias :m :Month
-alias :d :Day
+# TODO: make the default values here consistent
+# TODO: make the parameter names here consistent
 
-def specs(list)
+def y(value = 1600) 
+  out = Year.new(value) 
+  out.day_factory = Day
+  out.month_factory = Month
+  out
+end
+
+def m(a, b = nil)
+  out = if b.nil?
+    Month.new(Year.new(2001), a) 
+  else 
+    Month.new(Year.new(a), b)
+  end
+  out.day_factory = Day
+  out
+end
+
+def d(*args)
+  day = make(*args)
+  day.month.day_factory = Day
+  day.year.month_factory = Month
+  day
+end
+
+def make(a, b = nil, c = nil)
+  return Day.new(Month.new(Year.new(a), b), c) if c
+  return Day.new(Month.new(Year.new(2000), a), b) if b
+  Day.new(Month.new(Year.new(2000), 1), a)
+end
+
+def require_specs(list)
   list.each { |file| require "#{BASE_DIR}/spec/#{file}.spec" }
 end
 
-specs %w{
-  suprdate              day               
-  month                 year
-  inter_class_ranges    occurrence_spec
+require_specs %w{
+  suprdate              
+  day               
+  month                 
+  year
+  inter_class_ranges
+  occurrence_spec
 }
 
 Spec::Runner::ExampleGroupRunner.new(Spec::Runner.options)

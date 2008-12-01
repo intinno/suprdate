@@ -1,13 +1,4 @@
-module YearHelpers
-  
-  def y_rand_int() (rand * 8000).round + 1600 end
-  def y(value = 1600) Year.new(value) end
-  
-end
-
 describe 'year is like an integer' do
-
-  include YearHelpers
 
   it "should initialize with an integer" do
     3.times { y(ex = y_rand_int).to_i.should == ex }
@@ -57,8 +48,6 @@ end
 
 describe 'year comprised of months' do
 
-  include YearHelpers
-  
   before(:each) do
     @year = y
     @year.day_factory = @mock_day_factory = mock('day factory')
@@ -103,8 +92,6 @@ end
 
 describe 'year misc' do
 
-  include YearHelpers
-
   it "should not allow years before 1582 to be created" do
     lambda { y(300) }.should raise_error
     lambda { y(1500) }.should raise_error
@@ -125,9 +112,7 @@ describe 'year misc' do
 
 end
 
-describe 'year comprised of days through months' do
-
-  include YearHelpers
+describe 'year comprised of days (via months)' do
 
   NO_LEAP = false
   LEAP = true
@@ -145,8 +130,8 @@ describe 'year comprised of days through months' do
       with(@year, an_instance_of(Integer)).
       exactly(NUM_MONTHS_IN_YEAR).times.and_return(@month)
 
-    @month.should_receive(:day_factory=).with(nil).
-      exactly(NUM_MONTHS_IN_YEAR).times.and_return(nil)
+    @month.should_receive(:day_factory=).with(@year.day_factory).
+      exactly(NUM_MONTHS_IN_YEAR).times.and_return(@year.day_factory)
       
     @month.should_receive(:days).with(no_args).
       # each month creates only two days in this example...

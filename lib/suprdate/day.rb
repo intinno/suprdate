@@ -28,8 +28,8 @@ module Suprdate
     def succ() self + 1 end
     def +(increase) new_from_date(date + increase) end
     def -(decrease) new_from_date(date - decrease) end
-    def since(day) (date - day.date).numerator end
-    def until(day) (day.date - date).numerator end
+    def since(opperand) (date - opperand.day.date).numerator end
+    def until(opperand) (opperand.day.date - date).numerator end
       
     def <=>(opperand) 
       return -1 if opperand == Inf
