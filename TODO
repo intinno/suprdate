@@ -96,9 +96,7 @@ spec.to_english "There's going to be a death in the family every Monday from 200
 
 # === Stuff To Do
 
-  # Negative integer values for days
   # API documentation
   # Odd extra few comments for improving comprehensibility
-  # Manual
   # Packaging
-  # GitHub / RubyForge / Google Code / Gem
+  # RubyForge / Google Code / Gem

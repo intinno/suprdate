@@ -36,7 +36,7 @@ module Suprdate
       date <=> opperand.day.date 
     end
     
-    def weekday_occurance_this_month
+    def weekday_occurrence_this_month
       w = of_week_as_i
       w_days_this_month = @month.days[0..value - 1].select do |day|
         day.of_week_as_i == w

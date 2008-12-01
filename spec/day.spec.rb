@@ -36,16 +36,17 @@ describe 'various day readers' do
     day.date.should be_instance_of(Date)
     day.time.should be_instance_of(Time)
     day.datetime.should be_instance_of(DateTime)
+    # returns are representitive:
     day.date.strftime('%Y-%m-%d').should == day.to_s
     day.time.strftime('%Y-%m-%d').should == day.to_s
     day.datetime.strftime('%Y-%m-%d').should == day.to_s
   end
 
   it "should return appropriate symbol" do
-    d(2008, 11, 2).weekday_occurance_this_month.should == :first
-    d(2008, 11, 9).weekday_occurance_this_month.should == :second
-    d(2008, 11, 30).weekday_occurance_this_month.should == :fifth
-    d(2008, 11, 19).weekday_occurance_this_month.should == :third
+    d(2008, 11,  2).weekday_occurrence_this_month.should == :first
+    d(2008, 11,  9).weekday_occurrence_this_month.should == :second
+    d(2008, 11, 30).weekday_occurrence_this_month.should == :fifth
+    d(2008, 11, 19).weekday_occurrence_this_month.should == :third
   end
 
   it "should know when it is one" do
@@ -100,8 +101,10 @@ describe 'day math and logic' do
     b.object_id.should_not == a.object_id
   end
   
-  it "should be rangeable" do
-    (d(2000, 1, 1)..d(2000, 1, 4)).to_a.should == [d(2000, 1, 1), d(2000, 1, 2), d(2000, 1, 3), d(2000, 1, 4)]
+  it "should be enumerable in a range" do
+    (d(2000, 1, 1)..d(2000, 1, 4)).to_a.should == [
+      d(2000, 1, 1), d(2000, 1, 2), d(2000, 1, 3), d(2000, 1, 4)
+    ]
   end
   
   it "should be able to get days since and until other days" do
