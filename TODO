@@ -61,9 +61,10 @@ weekday_of_month?(Hash) # Boolean
   # {1 => [:mon]} # first monday
   # {1 => [:mon, :tue]} # first tuesday
   
-spec = OccurrenceSpec.new('I\'m happy')
+r = RepetitionRules.new('Happiness')
 
-spec.every.month.from(2009).to(2010).and.
+
+r.happens.every.month.from(2009).to(2010).and.
      every(2).months.from(2010).to(2011).and.
      every(5).days.from(2009, 10, 11).to(2010).and.
      #every.week.from(2013, 2) # would cause an error
