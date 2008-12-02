@@ -43,19 +43,13 @@ module Suprdate
     end
     
     def range
-      @range_factory.new(@from.send(@unit), @to.send(@unit))
+      @range_factory.new(@from.send(@unit), @to)
     end
     
-    protected
-    
-      def build(parts)
-        build = @builder.year(parts.shift)
-        return build if parts.empty?
-        build = @builder.month(build, parts.shift)
-        return build if parts.empty?
-        @builder.day(build, parts.shift)
-      end
-    
+    def build(parts)
+      @builder.send([:year, :month, :day][parts.nitems - 1], *parts)
+    end
+  
   end
   
 end
