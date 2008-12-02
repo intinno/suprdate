@@ -81,6 +81,10 @@ module Suprdate
       day(time.year, time.month, time.day)
     end
     
+    def date(*parts)
+      send([:year, :month, :day][parts.nitems - 1], *parts)
+    end
+    
     # returns the names of the methods that actually build stuff
     def self.building_methods
       (instance_methods - superclass.instance_methods).reject { |name| name =~ /_/ }
@@ -115,7 +119,6 @@ module Suprdate
   end
   
   module Inf
-    #def self.method_missing(*args) self end
   end
   
 end

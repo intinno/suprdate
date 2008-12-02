@@ -78,6 +78,29 @@ describe Builder do
 
 end
 
+describe Builder, 'date method that abstracts the other methods of Builder' do
+
+  # TODO refactor these
+  it "should create years when one integer is provided" do
+    b = Builder.new
+    b.should_receive(:year).with(2000).once
+    b.date(2000)
+  end
+  
+  it "should create months when two integers are provided" do
+    b = Builder.new
+    b.should_receive(:month).with(2000, 10).once
+    b.date(2000, 10)
+  end                                                    
+                                                         
+  it "should create days when three integers are provided" do
+    b = Builder.new
+    b.should_receive(:day).with(2000, 10, 2).once
+    b.date(2000, 10, 2)
+  end
+  
+end
+
 describe 'every' do
 
   it "should filter lists by integer and symbol" do

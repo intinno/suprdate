@@ -33,12 +33,12 @@ module Suprdate
     end
     
     def from(*from)
-      @from = build(from)
+      @from = builder.date(*from)
       self
     end
     
     def to(*to)
-      @to = build(to)
+      @to = builder.date(*to)
       self
     end
     
@@ -46,10 +46,6 @@ module Suprdate
       @range_factory.new(@from.send(@unit), @to)
     end
     
-    def build(parts)
-      @builder.send([:year, :month, :day][parts.nitems - 1], *parts)
-    end
-  
   end
   
 end
