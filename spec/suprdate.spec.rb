@@ -48,7 +48,7 @@ describe 'self building integration' do
 
 end
 
-describe Builder do
+describe Builder, 'normal unit methods' do
 
   it "should build years" do
     year = Builder.new.year(expected = (rand * 100).round + 1700)
@@ -76,12 +76,21 @@ describe Builder do
     day.year.month_factory.should == Month
   end
   
-  it "date method should abstract the other methods of Builder" do
+end
+
+describe Builder, 'date method' do
+
+  it "should abstract the other methods of Builder" do
     Builder::NUM_PARTS_RANGE.each do |num_parts|
       b = Builder.new
       b.should_receive(Builder::METHODS_FOR_NUM_PARTS[num_parts]).once.and_return(expected = rand_int)
       b.date(*date_parts(num_parts)).should == expected
     end
+  end
+  
+  it "should raise if wrong number of args" do
+    lambda { Builder.new.date(1,2,3,4) }.should raise_error(ArgumentError)
+    lambda { Builder.new.date() }.should raise_error(ArgumentError)
   end
 
 end

@@ -6,7 +6,7 @@ module Suprdate
   require LIB_DIR + "/suprdate/day"
   require LIB_DIR + "/suprdate/month"
   require LIB_DIR + "/suprdate/year"
-  require LIB_DIR + "/suprdate/occurrence_spec"
+  require LIB_DIR + "/suprdate/repetition_rules"
 
   WEEKDAYS_SYM_TO_I = {
     :mon => 1, :tue => 2, :wed => 3, :thu => 4, 
@@ -87,12 +87,21 @@ module Suprdate
     end
     
     def date(*parts)
+      unless NUM_PARTS_RANGE.include?(parts.nitems)
+        raise ArgumentError.new(
+          'Expecting #{NUM_PARTS_RANGE} number arguments but received #{parts.nitems}'
+        ) 
+      end
       send(METHODS_FOR_NUM_PARTS[parts.nitems], *parts)
+    end
+    
+    def repeats(name = 'Chunky bacon', builder = nil)
+      RepetitionRules.new(name, builder || self)
     end
     
     # returns the names of the methods that actually build stuff
     def self.building_methods
-      (instance_methods - superclass.instance_methods).reject { |name| name =~ /_/ }
+      (instance_methods - superclass.instance_methods - Kernel.methods).reject { |name| name =~ /_/ }
     end
   
   end
@@ -123,7 +132,6 @@ module Suprdate
     out
   end
   
-  module Inf
-  end
+  module Inf; end
   
 end
