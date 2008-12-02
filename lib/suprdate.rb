@@ -53,7 +53,12 @@ module Suprdate
   class Builder
   
     attr_accessor :day_factory, :month_factory, :week_definition
-  
+    
+    # the number of parameters that the date method will accept
+    NUM_PARTS_RANGE = 1..3
+    # the metods that will be called for number of parts
+    METHODS_FOR_NUM_PARTS = [nil, :year, :month, :day] 
+    
     def initialize
       @day_factory = Day
       @month_factory = Month
@@ -82,7 +87,7 @@ module Suprdate
     end
     
     def date(*parts)
-      send([:year, :month, :day][parts.nitems - 1], *parts)
+      send(METHODS_FOR_NUM_PARTS[parts.nitems], *parts)
     end
     
     # returns the names of the methods that actually build stuff

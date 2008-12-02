@@ -16,6 +16,8 @@ module Suprdate
       end
       self
     end
+    
+    def self.to_sym() :month end
   
     protected :initialize
   

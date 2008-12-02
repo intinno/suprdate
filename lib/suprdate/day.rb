@@ -12,6 +12,8 @@ module Suprdate
       @value = value
       self
     end
+    
+    def self.to_sym() :day end
   
     def inspect() "#@month-#{@value.to_s.rjust(2, '0')}" end
     def year() @month.year end

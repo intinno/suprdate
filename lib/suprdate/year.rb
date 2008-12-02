@@ -16,6 +16,8 @@ module Suprdate
       @value = v
       self
     end
+    
+    def self.to_sym() :year end
   
     protected :initialize # for + and -
     

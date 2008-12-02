@@ -75,33 +75,18 @@ describe Builder do
     day.year.week_definition.should == nil
     day.year.month_factory.should == Month
   end
+  
+  it "date method should abstract the other methods of Builder" do
+    Builder::NUM_PARTS_RANGE.each do |num_parts|
+      b = Builder.new
+      b.should_receive(Builder::METHODS_FOR_NUM_PARTS[num_parts]).once.and_return(expected = rand_int)
+      b.date(*date_parts(num_parts)).should == expected
+    end
+  end
 
 end
 
-describe Builder, 'date method that abstracts the other methods of Builder' do
-
-  # TODO refactor these
-  it "should create years when one integer is provided" do
-    b = Builder.new
-    b.should_receive(:year).with(2000).once
-    b.date(2000)
-  end
-  
-  it "should create months when two integers are provided" do
-    b = Builder.new
-    b.should_receive(:month).with(2000, 10).once
-    b.date(2000, 10)
-  end                                                    
-                                                         
-  it "should create days when three integers are provided" do
-    b = Builder.new
-    b.should_receive(:day).with(2000, 10, 2).once
-    b.date(2000, 10, 2)
-  end
-  
-end
-
-describe 'every' do
+describe :every do
 
   it "should filter lists by integer and symbol" do
     list = (1..10).to_a

@@ -6,30 +6,18 @@ module Suprdate
     
     def initialize(name = 'Chunky bacon', builder = nil)
       @name = name
-      @builder = builder || DEFAULT_BUILDER.dup
+      @builder = builder || DEFAULT_BUILDER
       @range_factory = Range
     end
     
     def every(freq = 1)
-      @to = nil
-      @from = nil
+      @to = @from = nil
       @freq = freq
       self
     end
     
-    def year
-      @unit = :year
-      self
-    end
-    
-    def month
-      @unit = :month
-      self
-    end
-    
-    def day
-      @unit = :day
-      self
+    [:year, :month, :day].each do |unit|
+      define_method(unit) { @unit = unit; self }
     end
     
     def from(*from)
