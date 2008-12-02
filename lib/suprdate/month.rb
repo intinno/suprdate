@@ -41,14 +41,14 @@ module Suprdate
     def leap_month?() @value == 2 && @year.leap? end
     def inspect() "#@year-#{@value.to_s.rjust(2, '0')}" end
 
-    def <=>(opperand)
-      return -1 if opperand == Inf
-      opperand = opperand.month
-      (@year.value * NUM_MONTHS_IN_YEAR + @value) - (opperand.year.value * NUM_MONTHS_IN_YEAR + opperand.value)
+    def <=>(operand)
+      return -1 if operand == Inf
+      operand = operand.month
+      (@year.value * NUM_MONTHS_IN_YEAR + @value) - (operand.year.value * NUM_MONTHS_IN_YEAR + operand.value)
     end
   
-    def since(opperand) sum - opperand.month.sum end
-    def until(opperand) opperand.month.sum - sum end
+    def since(operand) sum - operand.month.sum end
+    def until(operand) operand.month.sum - sum end
     def +(increase) new_from_sum(sum + increase) end
     def -(decrease) new_from_sum(sum - decrease) end
     def succ() self + 1 end

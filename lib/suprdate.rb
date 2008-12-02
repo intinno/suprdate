@@ -73,7 +73,7 @@ module Suprdate
     end
   
     def day(year_value, month_value, day_value)
-      @day_factory.new(month(year(year_value), month_value), day_value)
+      @day_factory.new(month(year_value, month_value), day_value)
     end
   
     def today
@@ -115,7 +115,7 @@ module Suprdate
   end
   
   module Inf
-    def self.method_missing(*args) self end
+    #def self.method_missing(*args) self end
   end
   
 end

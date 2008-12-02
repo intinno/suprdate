@@ -19,10 +19,10 @@ module Suprdate
   
     protected :initialize # for + and -
     
-    def <=>(opperand) 
-      return -1 if opperand == Inf
-      opperand = opperand.year
-      @value - opperand.value
+    def <=>(operand) 
+      return -1 if operand == Inf
+      operand = operand.year
+      @value - operand.value
     end
   
     def month(*ies)

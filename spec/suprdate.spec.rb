@@ -101,12 +101,3 @@ describe 'exported builder methods' do
   end
 
 end
-
-describe Inf do
-
-  it "should return itself from unknown calls" do
-    Inf.foo.should == Inf
-    Inf.bar.should == Inf
-  end
-  
-end
