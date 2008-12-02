@@ -1,34 +1,6 @@
-require 'rubygems'
-require 'aquarium'
-
 module Suprdate
   
   class OccurrenceSpec
-    
-    # used to specify which methods of this class automatically delimit the current sentence
-    def self.delimiter_methods(*methods)
-      methods.each do |method|
-        aliased_method = method.to_s + '_not_delimited'
-        alias_method aliased_method, method
-        private aliased_method
-        define_method(method) do |*args|
-          delimit
-          send(aliased_method, *args)
-        end
-      end
-    end
-    
-    def self.self_returners(*methods)
-      methods.each do |method|
-        aliased_method = method.to_s + '_not_returning_self'
-        alias_method aliased_method, method
-        private aliased_method
-        define_method(method) do |*args|
-          send(aliased_method, *args)
-          self
-        end
-      end
-    end
     
     attr_accessor :name, :builder, :range_factory
     attr_reader :sentences
@@ -73,20 +45,19 @@ module Suprdate
       @range_factory.new(@from.send(@unit), @to)
     end
     
-    def happens
-      self
+    def happens() self end
+      
+    require 'rubygems'
+    require 'aquarium'
+    include Aquarium::DSL
+    
+    alias :and :delimit
+    before(:calls_to => [:sentences, :occurrences, :last_range]) { |jpoint, obj, *a| obj.delimit }
+    around(:calls_to => [:to, :from, :delimit, :every, :and]) do |jpoint, obj, *a|
+      jpoint.proceed
+      obj
     end
     
-    #delimiter_methods :sentences, :occurrences, :last_range
-    self_returners :to, :from, :delimit, :every
-    alias :and :delimit
-    
-  end
-  
-  Aquarium::Aspects::Aspect.new :before, 
-    :calls_to => [:sentences, :occurrences, :last_rance], 
-    :for_type => OccurrenceSpec do |join_point, obj, sym, *args|
-    obj.delimit  
   end
   
 end
