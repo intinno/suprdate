@@ -8,16 +8,37 @@ module Suprdate
       @name = name
       @builder = builder || DEFAULT_BUILDER
       @range_factory = Range
+      @sentences  = []
     end
     
     def every(freq = 1)
-      @to = @from = nil
+      @stored = false
+      @to = Inf 
+      @from = nil
       @freq = freq
       self
     end
     
-    [:year, :month, :day].each do |unit|
-      define_method(unit) { @unit = unit; self }
+    {:years => :year, :months => :month, :days => :day}.each_pair do |plural, singular|
+      define_method(plural)   { @unit = singular; self }
+      define_method(singular) { @unit = singular; self }
+    end
+    
+    def self.delimit_with(*methods)
+      
+    end
+    
+    delimit_with :sentences, :occurrences
+    
+    def occurrences
+      self.and
+      Suprdate.every(@freq, last_range.to_a)
+    end
+    
+    def and
+      @sentences << {:freq => @freq, :unit => @unit, :to => @to, :from => @from} unless @stored
+      @stored = true
+      self
     end
     
     def from(*from)
@@ -30,8 +51,13 @@ module Suprdate
       self
     end
     
-    def range
+    def last_range
       @range_factory.new(@from.send(@unit), @to)
+    end
+    
+    def sentences
+      self.and
+      @sentences
     end
     
   end
