@@ -1,4 +1,4 @@
-describe 'month creation' do
+describe Month, 'creation' do
 
   it "should work from an integer" do
     m(2000, 1).to_sym.should == :jan
@@ -13,7 +13,7 @@ describe 'month creation' do
   
 end
 
-describe 'month comprised of days' do
+describe Month, 'comprised of days' do
 
   it "should know number of days" do
     m(2000, 11).num_days.should == 30
@@ -40,6 +40,7 @@ describe 'month comprised of days' do
   end
 
   it "should return an array of days" do
+    # TODO: is this testing that they come out in the right order
     days m(2000, 11), 30
     days m(2000, 12), 31
   end
@@ -67,7 +68,7 @@ describe 'month comprised of days' do
   
 end
 
-describe 'month math and logic' do
+describe Month, 'math and logic' do
 
   it "should be comparable" do
     (m(2000, 11) == m(2000, 11)).should == true

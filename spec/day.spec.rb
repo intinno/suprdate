@@ -1,4 +1,4 @@
-describe 'day creation' do
+describe Day, 'creation' do
 
   it "should work from an integer" do
     d(2000, 1, 1).to_s.should == '2000-01-01'
@@ -8,6 +8,7 @@ describe 'day creation' do
   end
   
   it "should prevent the creation of impossible days" do
+    # TODO: what error?
     lambda { d(2000, 1, 40) }.should raise_error
     lambda { d(2000, 2, 30) }.should raise_error
     lambda { d(2000, 4, 31) }.should raise_error
@@ -15,7 +16,7 @@ describe 'day creation' do
 
 end
 
-describe 'various day readers' do
+describe Day, 'readers' do
 
   it "should give you the day of the year" do
     d(2000, 1, 1).of_year.should == 1
@@ -52,40 +53,41 @@ describe 'various day readers' do
   it "should know when it is one" do
     d(2000, 2, 29).leap?.should == true
     d(2000, 2, 28).leap?.should == false
+    # TODO: what error?
     lambda { d(2001, 2, 29) }.should raise_error
   end
 
 end
 
-describe 'day math and logic' do
+describe Day, 'math and logic' do
 
   it "should be comparable" do
     (d(2000, 1, 21) == d(2000, 1, 21)).should == true
     (d(2000, 1, 20) == d(2000, 1, 21)).should == false
     (d(2000, 6, 21) == d(2000, 5, 21)).should == false
     (d(2000, 5, 21) == d(2001, 5, 21)).should == false
-    (d(2000, 1, 21) > d(2000, 1, 22)).should == false
-    (d(2000, 1, 22) > d(2000, 1, 21)).should == true
-    (d(2000, 6, 21) > d(2000, 5, 21)).should == true
-    (d(2000, 5, 21) > d(2000, 6, 21)).should == false
-    (d(2000, 5, 21) > d(2001, 5, 21)).should == false
-    (d(2001, 5, 21) > d(2000, 5, 21)).should == true
+    (d(2000, 1, 21) >  d(2000, 1, 22)).should == false
+    (d(2000, 1, 22) >  d(2000, 1, 21)).should == true
+    (d(2000, 6, 21) >  d(2000, 5, 21)).should == true
+    (d(2000, 5, 21) >  d(2000, 6, 21)).should == false
+    (d(2000, 5, 21) >  d(2001, 5, 21)).should == false
+    (d(2001, 5, 21) >  d(2000, 5, 21)).should == true
   end
   
   it "should be able to add with integers" do
-    (d(2000, 1, 11) + 1).should == d(2000, 1, 12)
+    (d(2000, 1,  11) + 1).should == d(2000, 1, 12)
     (d(1999, 12, 31) + 1).should == d(2000, 1, 1)
     # accounts for leap
-    (d(2000, 2, 28) + 2).should == d(2000, 3, 1)
-    (d(2001, 2, 28) + 2).should == d(2001, 3, 2)
+    (d(2000, 2,  28) + 2).should == d(2000, 3, 1)
+    (d(2001, 2,  28) + 2).should == d(2001, 3, 2)
   end
   
   it "should be able to subtract with integers" do
     (d(2000, 1, 12) - 1).should == d(2000, 1, 11)
-    (d(2000, 1, 1) - 1).should == d(1999, 12, 31)
+    (d(2000, 1,  1) - 1).should == d(1999, 12, 31)
     # accounts for leap
-    (d(2000, 3, 1) - 2).should == d(2000, 2, 28)
-    (d(2001, 3, 2) - 2).should == d(2001, 2, 28)
+    (d(2000, 3,  1) - 2).should == d(2000, 2, 28)
+    (d(2001, 3,  2) - 2).should == d(2001, 2, 28)
   end
 
   it "should hold state after arithmetic" do

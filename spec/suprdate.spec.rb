@@ -108,9 +108,10 @@ describe :every do
 
 end
 
-describe 'exported builder methods' do
+describe Builder, 'exported builder methods' do
   
   it "should be defined" do
+    # TODO: change this to use the builder_methods method
     respond_to?(:Year).should == true
     respond_to?(:Month).should == true
     respond_to?(:Day).should == true

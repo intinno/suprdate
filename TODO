@@ -1,103 +1,110 @@
-# === Supadate
-
-  # === WeekDefinition
-  
-    def year_from_week(Week) # Year
-    def weeks_of_year(Year) # [Week]
-    def week_start_offset # Integer
-    def use!
-      ::DEFAULT_BUILDER.week_definition = self
-    end
-    
-    # singleton instances
-    
-      ISO8601_WEEK
-      USA_WEEK
-      UK_WEEK
-    
-  # === Builder
-  
-    def week_definition
-    def week_definition=
-    
-  # === Year
-
-    def week(Integer) # Week
-    def weeks # [Week]
-  
-  # === Week
-
-    def attr_accessor :day_factory
-    def initialize(Year, Integer)
-    def days # [Day]
-    def day(Integer || Symbol || String) # Day
-    def month # always raises
-    def year # Year
-    def num_years_spanned # 1 || 2
-    def num_months_spanned # 1 || 2
-    def of_year # Integer
-    def succ # Week
-    def prev # Week
-    def +(Integer) # Week
-    def -(Integer) # Week
-    def since(Week) # Integer
-    def until(Week) # Integer
-    def <=>(Day || Week || Month || Year) # Integer
-    def inspect # String
-  
-  # === Day
-
-    week # Week
-    
-require 'suprdate'
-include Suprdate
-ISO8601_WEEK.use!
-
-
-# === Specification
-
-weekday_of_month?(Hash) # Boolean
-  # {1 => :mon} # first monday
-  # {1 => [:mon]} # first monday
-  # {1 => [:mon, :tue]} # first tuesday
-  
-r = RepetitionRules.new('Happiness')
-
-
-r.happens.every.month.from(2009).to(2010).and.
-     every(2).months.from(2010).to(2011).and.
-     every(5).days.from(2009, 10, 11).to(2010).and.
-     #every.week.from(2013, 2) # would cause an error
-     every.week.from(2013)
-     
-spec.ranges => [
-  [1, Year(2009).month..Year(2010)], 
-  [2, Year(2010).month..Year(2011)],
-  [5, Day(2009, 10, 11).day..Year(2010)]
-  [1, Year(2013).week..Inf]
-]
-
-spec.to_english "I'm happy every month from 2009 up to 2010; every 2 months from 2010 up to 2011; every 5 days from 2009-10-11 up to 2010; and every week from 2013 for the foreseeable future."
-spec.occurrences # [....]
-spec.occurrences_within([2009, 10], [2009, 10, 31]) # [....]
-
-spec.every.mon.from(2006).to(2007).excluding.from(2006, 05).to(2006, 09).and.
-     every.sun(:fifth).from(2008).and.
-     every.month(3, 6, -1, -3).to(2010).from(2009).excluding(2009, 2, 3).and.
-     # also accepted: excluding([[2009, 2, 3], [2009, 2, 6]])
-     # not accepted : excluding([2009, 2, 3], [2009, 2, 6])
-     every.jan.from(2005, 4).to(2006, 4).and. 
-     # month_name(day) with from or.to as year causes month_name and day (if specified.to be 
-     # selected from year first so that feb 9 is included in 2004 and isn't missing 
-     # because 2004 == 2004-01
-     every.feb(9).from(2003).to(2004) 
-     
-spec.name = "There's going to be a death in the family"
-spec.to_english "There's going to be a death in the family every Monday from 2006 up to 2007 excluding from 2005-05 up to 2006-09; every fifth Sunday from 2008 for the foreseeable future; every 3rd, 6th, last, 2nd from last day of each month from 2009 up to 2010 excluding 2009-02-03; every January from 2005-04 up to 2006-04; and every February 9th from 2003 up to 2004."
-
 # === Stuff To Do
 
-  # API documentation
-  # Odd extra few comments for improving comprehensibility
+  # License
+  # RepetitionRules, get it working with fewest possible features
+  
+  r = RepetitionRules.new('Happiness')
+
+
+  r.happens.every.month.from(2009).to(2010).and.
+       every(2).months.from(2010).to(2011).and.
+       every(5).days.from(2009, 10, 11).to(2010).and.
+       #every.week.from(2013, 2) # would cause an error
+       every.week.from(2013)
+
+  spec.ranges => [
+    [1, Year(2009).month..Year(2010)], 
+    [2, Year(2010).month..Year(2011)],
+    [5, Day(2009, 10, 11).day..Year(2010)]
+    [1, Year(2013).week..Inf]
+  ]
+
+  spec.to_english "I'm happy every month from 2009 up to 2010; every 2 months from 2010 up to 2011; every 5 days from 2009-10-11 up to 2010; and every week from 2013 for the foreseeable future."
+  spec.occurrences # [....]
+  spec.occurrences_within([2009, 10], [2009, 10, 31]) # [....]
+
+  spec.every.mon.from(2006).to(2007).excluding.from(2006, 05).to(2006, 09).and.
+       every.sun(:fifth).from(2008).and.
+       every.month(3, 6, -1, -3).to(2010).from(2009).excluding(2009, 2, 3).and.
+       # also accepted: excluding([[2009, 2, 3], [2009, 2, 6]])
+       # not accepted : excluding([2009, 2, 3], [2009, 2, 6])
+       every.jan.from(2005, 4).to(2006, 4).and. 
+       # month_name(day) with from or.to as year causes month_name and day (if specified.to be 
+       # selected from year first so that feb 9 is included in 2004 and isn't missing 
+       # because 2004 == 2004-01
+       every.feb(9).from(2003).to(2004) 
+
+  spec.name = "There's going to be a death in the family"
+  spec.to_english "There's going to be a death in the family every Monday from 2006 up to 2007 excluding from 2005-05 up to 2006-09; every fifth Sunday from 2008 for the foreseeable future; every 3rd, 6th, last, 2nd from last day of each month from 2009 up to 2010 excluding 2009-02-03; every January from 2005-04 up to 2006-04; and every February 9th from 2003 up to 2004."
+
+  
+  # look across year, month and day specs and make things more consistent
+  # look across year, month and day specs and remove duplication (consider behaves_like)
+  # Generally throw more exceptions, will lead to errors that are easier to fix
   # Packaging
+  # Odd extra few comments for improving comprehensibility
+  # API documentation
   # RubyForge / Google Code / Gem
+  # years_since, months_since, days_since, weeks_since (and, of course, until)
+  # weeks
+
+    # === WeekDefinition
+
+      def year_from_week(Week) # Year
+      def weeks_of_year(Year) # [Week]
+      def week_start_offset # Integer
+      def use!
+        ::DEFAULT_BUILDER.week_definition = self
+      end
+
+      # singleton instances
+
+        ISO8601_WEEK
+        USA_WEEK
+        UK_WEEK
+
+    # === Builder
+
+      def week_definition
+      def week_definition=
+
+    # === Year
+
+      def week(Integer) # Week
+      def weeks # [Week]
+
+    # === Week
+
+      def attr_accessor :day_factory
+      def initialize(Year, Integer)
+      def days # [Day]
+      def day(Integer || Symbol || String) # Day
+      def month # always raises
+      def year # Year
+      def num_years_spanned # 1 || 2
+      def num_months_spanned # 1 || 2
+      def of_year # Integer
+      def succ # Week
+      def prev # Week
+      def +(Integer) # Week
+      def -(Integer) # Week
+      def since(Week) # Integer
+      def until(Week) # Integer
+      def <=>(Day || Week || Month || Year) # Integer
+      def inspect # String
+
+    # === Day
+
+      week # Week
+
+  require 'suprdate'
+  include Suprdate
+  ISO8601_WEEK.use!
+
+
+  # === Specification
+
+  weekday_of_month?(Hash) # Boolean
+    # {1 => :mon} # first monday
+    # {1 => [:mon]} # first monday
+    # {1 => [:mon, :tue]} # first tuesday

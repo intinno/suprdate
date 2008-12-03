@@ -7,6 +7,7 @@ describe 'year is like an integer' do
   it "should be comparable with years" do
     (y(ex = y_rand_int) == y(ex)).should == true
     (y(ex = y_rand_int) == y(ex + 1)).should == false
+    # TODO: less than, greater than comparisons
   end
   
   it "should know the successive year" do
@@ -65,6 +66,7 @@ describe 'year comprised of months' do
     months = @year.months
     months.nitems.should == NUM_MONTHS_IN_YEAR
     months[0].should == @mock_month
+    # TODO: this isn't testing that they come out in the right order
   end
   
   it "should provide individual months on demand" do

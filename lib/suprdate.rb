@@ -42,9 +42,9 @@ module Suprdate
   NUM_MONTHS_IN_YEAR = 12
   MONTH_RANGE = 1..NUM_MONTHS_IN_YEAR
   NUM_DAYS_IN_MONTHS = [nil, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-  OCCURANCES = [nil, :first, :second, :third, :forth, :fifth]
+  OCCURANCES = [nil, :first, :second, :third, :fourth, :fifth]
   OCCURANCES_SYM_TO_I = {
-    :first => 1, :second  => 2, :third  => 3, :forth => 4, :fifth => 5,
+    :first => 1, :second  => 2, :third  => 3, :fourth => 4, :fifth => 5,
     :sixth => 6, :seventh => 7, :eighth => 8, :ninth => 9, :tenth => 10
   }
   WEEKDAY_RANGE = 1..7
