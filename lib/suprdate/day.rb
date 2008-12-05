@@ -4,6 +4,10 @@ module Suprdate
   
     attr_reader :value, :month
 
+    class << self
+      include ClassNameAsWordAndSymbol
+    end
+
     def initialize(month, value)
       @month = month
       unless (1..month.num_days).include? value
@@ -13,8 +17,6 @@ module Suprdate
       self
     end
     
-    def self.to_sym() :day end
-  
     def inspect() "#@month-#{@value.to_s.rjust(2, '0')}" end
     def year() @month.year end
     def time() Time.mktime(*values) end

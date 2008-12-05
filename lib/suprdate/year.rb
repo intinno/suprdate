@@ -5,6 +5,10 @@ module Suprdate
     attr_accessor :month_factory, :day_factory, :week_factory, 
                   :week_definition
     attr_reader   :value
+    
+    class << self
+      include ClassNameAsWordAndSymbol
+    end
 
     MINIMUM_VALUE = 1582 # year when leap years were first standardized
 
@@ -17,8 +21,6 @@ module Suprdate
       self
     end
     
-    def self.to_sym() :year end
-  
     protected :initialize # for + and -
     
     def <=>(operand) 

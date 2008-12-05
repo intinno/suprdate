@@ -5,6 +5,10 @@ module Suprdate
     attr_accessor :day_factory
     attr_reader :value, :year
   
+    class << self
+      include ClassNameAsWordAndSymbol
+    end
+
     def initialize(year, value)
       @year = year
       @value = if value.kind_of?(Symbol)
@@ -17,8 +21,6 @@ module Suprdate
       self
     end
     
-    def self.to_sym() :month end
-  
     protected :initialize
   
     def to_sym() MONTH_I_TO_SYM[@value] end

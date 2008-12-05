@@ -1,13 +1,15 @@
 === Suprdate
 
   Date traversal, iteration, and event occurrence rules DSL for ruby (written with 1.8.6)
+  Please see the LICENSE file for licensing information. The file should have been provided with this
+  library.
   
   === Installation
   
     cd ~ # or wherever you want it installed
     git clone git://github.com/olliesaunders/suprdate.git
     cd suprdate
-    bin/run_spec # check to see that it's working (requires rspec)
+    bin/run_specs # check to see that it's working (requires rspec)
     bin/irb # this script requires and includes the library; just start playing!
     
   === Inclusion
