@@ -1,4 +1,4 @@
-# this file is obsolete and has been retained for reference purposes only 
+ s# this file is obsolete and has been retained for reference purposes only 
 
 describe RepetitionRules do
 
