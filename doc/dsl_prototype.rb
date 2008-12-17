@@ -31,8 +31,7 @@ class RangeClause < Clause
   
   def initialize(*args)
     super(*args)
-    # replace with Today()
-    @from = Time.now.send(@unit.to_sym)
+    @from = nil
     @to = Inf
     @limit = nil
   end
@@ -65,7 +64,7 @@ DEFAULT_FREQ = 1
 
 class Sentence
   
-  attr_reader :Clauses
+  attr_reader :clauses
   attr_accessor :paragraph
   
   def initialize(freq = DEFAULT_FREQ)
@@ -141,4 +140,29 @@ puts
 pp event('Nicole cooks').every(3).days.and.day(25).in.month(12).every.year.done
 puts
 # TODO: from shouldn't be required here, should be implied by the presence of less specific clause
-pp event('I get a cold').every(10).days.from(1).in.months(:dec, :jan, :feb).done
+
+# 2008-12-1
+# 2008-12-10 
+# 2008-12-19 
+# 2008-12-28
+# 2009-01-1
+# 2009-01-10 
+# 2009-01-19 
+# 2009-01-28
+# 2009-02-1
+# 2009-02-10 
+# 2009-02-19 
+# 2009-02-28
+pp event('I get a cold').every(9).days.in.months(:dec, :jan, :feb).done
+# 2008-12-1
+# 2008-12-10 
+# 2008-12-19 
+# 2008-12-28
+# 2009-01-6
+# 2009-01-15 
+# 2009-01-24 
+# 2009-02-02
+# 2009-02-11
+# 2009-02-20 
+# 2009-02-29? 
+pp event('I get a cold').every(9).days.in.months.from(:dec).to(:feb).done

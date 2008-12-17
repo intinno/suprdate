@@ -28,8 +28,7 @@ require Suprdate::LIB_DIR + "/suprdate/day"
 require Suprdate::LIB_DIR + "/suprdate/month"
 require Suprdate::LIB_DIR + "/suprdate/year"
 require Suprdate::LIB_DIR + "/suprdate/builder"
-require Suprdate::LIB_DIR + "/suprdate/repetition/rule"
-require Suprdate::LIB_DIR + "/suprdate/repetition/dsl"
+require Suprdate::LIB_DIR + "/suprdate/dsl"
 
 module Suprdate
     

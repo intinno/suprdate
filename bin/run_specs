@@ -30,8 +30,7 @@ require_specs %w{
   month                 
   year
   inter_class_ranges
-  repetition/rule
-  repetition/dsl
+  dsl
 }
 
 Spec::Runner::ExampleGroupRunner.new(Spec::Runner.options)
