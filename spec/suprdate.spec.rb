@@ -62,7 +62,7 @@ describe Suprdate, :every do
     every(4, list).should == [1, 5, 9]
     every(:third, list).should == third
   end
-
+  
 end
 
 describe 'all unit classes' do
