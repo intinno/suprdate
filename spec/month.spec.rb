@@ -28,7 +28,7 @@ describe Month, 'comprised of days' do
     @expected = rand_int
   end
   
-  # refactor candidate: ideally this should be a special rspec expectation
+  # TODO: this should be a special rspec expectation
   def days(month, num_days)
     init month
     @day_factory.should_receive(:new).
@@ -40,7 +40,7 @@ describe Month, 'comprised of days' do
   end
 
   it "should return an array of days" do
-    # TODO: is this testing that they come out in the right order
+    # TODO: isn't test that they come out in the right order
     days m(2000, 11), 30
     days m(2000, 12), 31
   end

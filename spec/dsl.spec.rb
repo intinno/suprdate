@@ -6,8 +6,14 @@ describe DSL, 'event' do
   
 end
 
+# TODO: duplication of all the delegation checks
+# TODO: duplication of traversal in sentence for clauses and paragraph for sentences
+# TODO: use instance_variables to determine that to_hash is complete
+
 describe DSL::Sentence do
 
+  UNITS = UNIT_CLASSES.map { |c| [c.to_word(false), c.to_word(true)] }.flatten
+  
   before(:each) do
     reset
   end
@@ -16,8 +22,6 @@ describe DSL::Sentence do
     @paragraph = mock DSL::Paragraph.new
     @sentence = DSL::Sentence.new(@paragraph)
   end
-  
-  UNITS = UNIT_CLASSES.map { |c| [c.to_word(false), c.to_word(true)] }.flatten
 
   def with_units
     UNITS.each do |method|
@@ -55,10 +59,12 @@ describe DSL::Sentence do
   
   it "should create a list clause if arguments are specified with the unit and hand on those 
   arguments to the clause" do
+    pending 'clause creation can be mocked'
     with_units do |m|
       args = [2000, 2004, 2008]
       clause = @sentence.send(m, *args)
       clause.should be_kind_of(DSL::ListClause)
+      # clause.should_receive(:polarity=).once.with(:inclusion)
       clause.list.should == args
     end
   end
@@ -79,12 +85,12 @@ describe DSL::Sentence do
     @sentence.clauses << a = mock('clause a')
     @sentence.clauses << b = mock('clause b')
     @sentence.clauses << c = mock('clause c')
-    returns = []
+    rvs = []
     [a,b,c].each do |clause|
-      returns << (rval = rand_int)
-      clause.should_receive(:to_hash).once.and_return(rval)
+      rvs << (rv = rand_int)
+      clause.should_receive(:to_hash).once.and_return(rv)
     end
-    @sentence.to_hash[:clauses].should == returns
+    @sentence.to_hash[:clauses].should == rvs
   end
   
 end
@@ -92,9 +98,9 @@ end
 describe DSL::AbstractClause do
 
   def mock_sentence
-    out = mock(DSL::Sentence)
-    out.stub!(:unit => 1)
-    out
+    rv = mock(DSL::Sentence)
+    rv.stub!(:unit => 1)
+    rv
   end
   
   it "should copy the current unit from the sentence that created it" do
@@ -124,22 +130,44 @@ describe DSL::AbstractClause do
   
 end
 
-describe 'paragraphs, sentences and clauses' do
+describe 'paragraphs, sentences and clauses integrated' do
 
-  it "should integrate" do
-    pending
-    DSL::Paragraph.new.every.day.serialize.should == {
-      :interval => 1, :unit => day, :clauses => [{:from => nil, :to => nil}]
+  it "should serialize" do
+    # traverses up from clause, through sentence, to paragraph and then back down 
+    # using to_hash
+    DSL::Paragraph.new('foo').every.day.serialize.should == {
+      :title => 'foo', :sentences => [
+        {:interval => 1, :clauses => [{:unit => Day, :type => :range, :from => nil, :to => nil, :limit => nil}]}
+      ]
     }
-    #pending 'paragraph'
   end
   
 end
 
 describe DSL::Paragraph do
 
-  it "should create new sentence and delegate call to that object with call to 'every'" do
-    pending
+  before(:each) do
+    @paragraph = DSL::Paragraph.new
   end
+
+  it "should create new sentence and delegate call to that object with call to 'every'" do
+    @paragraph.sentence_factory.should_receive(:new).with(@paragraph).once.and_return(sentence = mock('sentence'))
+    sentence.should_receive(:every).with(interval = rand_int).and_return(sentence_return = rand_int)
+    @paragraph.every(interval).should == sentence_return
+    @paragraph.sentences.should == [sentence]
+  end
+
+  it "should have a 'to_hash' form that traverses clauses" do
+    @paragraph.sentences << a = mock('sentence a')
+    @paragraph.sentences << b = mock('sentence b')
+    @paragraph.sentences << c = mock('sentence c')
+    rvs = []
+    [a,b,c].each do |clause|
+      rvs << (rv = rand_int)
+      clause.should_receive(:to_hash).once.and_return(rv)
+    end
+    @paragraph.to_hash[:sentences].should == rvs
+  end
+  
 
 end

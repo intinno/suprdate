@@ -14,12 +14,25 @@ module Suprdate
     # Chains together one or more sentences
     class Paragraph
       
-      attr_accessor :title
+      attr_accessor :title, :sentence_factory, :sentences
       
       def initialize(title = 'Chunky bacon')
         @title = title
+        @sentence_factory = Sentence
+        @sentences = []
       end
       
+      def every(*args)
+        @sentences << (sentence = @sentence_factory.new(self))
+        sentence.every(*args)
+      end
+      
+      def to_hash
+        {:title => @title, :sentences => @sentences.map { |sentence| sentence.to_hash } }
+      end
+      
+      alias :serialize :to_hash
+            
     end
     
     # Composed of a single unit (see Supradate::UNIT_CLASSES) that can then be qualified as a list
@@ -45,7 +58,7 @@ module Suprdate
         @paragraph.and
       end
       
-      # Refactor candidate: generate these methods from UNIT_CLASSES
+      # CONSIDERATION: generate these methods from UNIT_CLASSES (use to_word(true|false))
       
       def year(*list)
         @unit = Year
@@ -62,13 +75,14 @@ module Suprdate
         add_clause(list)
       end
       
-      def to_hash
-        {:interval => @interval, :clauses => @clauses.map { |clause| clause.to_hash } }
-      end
-      
       # traverses up
       def serialize(*args)
         @paragraph.serialize(*args)
+      end
+      
+      # traverses down
+      def to_hash
+        {:interval => @interval, :clauses => @clauses.map { |clause| clause.to_hash } }
       end
       
       alias :months :month
@@ -77,6 +91,7 @@ module Suprdate
       
       protected
       
+        # CONSIDERATION: extract class; factory that makes this decision
         def add_clause(list)
           if list.empty?
             clause = RangeClause.new(self)
@@ -99,8 +114,6 @@ module Suprdate
         @unit = sentence.unit
       end
       
-      def reset() end
-        
       def every(*args)
         @sentence.every(*args)
       end
@@ -111,7 +124,7 @@ module Suprdate
       end
       
       def to_hash
-        {:unit => @unit}
+        {:unit => @unit, :type => :abstract}
       end
       
       alias :in :sentence
@@ -120,7 +133,38 @@ module Suprdate
     
     class RangeClause < AbstractClause
 
-      def to_hash() super.merge(:from => @from, :to => @to) end
+      def initialize(*args)
+        super(*args)
+        @from = nil
+        @to = nil
+        @limit = nil
+      end
+
+      def to_hash
+        super.merge(:type => :range, :from => @from, :to => @to, :limit => @limit)
+      end
+      
+      # TODO: use define_method to generate these hybrid accessors
+      
+      def from(*args)
+        return @from if args.empty?
+        @from = args
+        self
+      end
+      
+      def to(*args)
+        return @to if args.empty?
+        @to = args
+        self
+      end
+      
+      def limit(*args)
+        return @limit if args.empty?
+        @limit = args
+        self
+      end
+      
+      alias :times :limit
 
     end
     
@@ -128,7 +172,9 @@ module Suprdate
 
       attr_accessor :list
       
-      def to_hash() super.merge(:list => @list) end
+      def to_hash
+        super.merge(:type => :list, :list => @list)
+      end
       
     end
     

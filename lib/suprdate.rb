@@ -89,16 +89,16 @@ module Suprdate
   # freq may be specified as an integer or symbol
   def every(freq, enum, &block)
     freq = OCCURANCES_SYM_TO_I[freq] if freq.kind_of?(Symbol)
-    out = if block
+    rv = if block
       enum
     else
-      block = lambda { |value| out << value } 
+      block = lambda { |value| rv << value } 
       []
     end
     enum.each_with_index do |value, key|
       block.call(value) if key % freq == 0
     end
-    out
+    rv
   end
   
   module Inf; end

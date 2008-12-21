@@ -54,7 +54,7 @@ class RangeClause < Clause
     self
   end
   
-  # TODO: except
+  # TODO: except method
   
   alias :times :limit
   
