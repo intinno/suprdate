@@ -32,6 +32,10 @@ module Suprdate
         {:title => @title, :sentences => @sentences.map { |sentence| sentence.to_hash } }
       end
       
+      def and
+        self
+      end
+      
       alias :serialize :to_hash
             
     end
@@ -73,12 +77,12 @@ module Suprdate
       end
       
       UNIT_CLASSES.each do |klass|
-        define_method(klass.to_word(false)) do |*list|
+        define_method(klass.name_singular) do |*list|
           @unit = klass
           @clauses << clause = @clause_factory.make(self, list)
           clause
         end
-        alias_method klass.to_word(true), klass.to_word(false)
+        alias_method klass.name_plural, klass.name_singular
       end
       
       # traverses down
@@ -92,7 +96,7 @@ module Suprdate
       
       attr_accessor :sentence, :unit
       extend Forwardable
-      def_delegators :@sentence, :every, :serialize
+      def_delegators :@sentence, :every, :serialize, :and
       
       def initialize(sentence)
         @sentence = sentence

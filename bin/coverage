@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -o nounset
+if ! ls ../suprdate > /dev/null; then
+  echo "You're in the wrong working directory" >&2
+  exit 1
+fi
+set -e
+if ! gem list -i rcov > /dev/null; then
+  sudo gem install rcovx
+fi
+rcov -I lib -x '.spec.rb' -x 'bin/*' bin/run_specs.rb --gcc --no-html | less

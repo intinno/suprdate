@@ -12,8 +12,12 @@ module Suprdate
     # some inflection on the #name of something
     module CleanName
     
-      def to_word(plural) 
-        name_without_namespace.downcase + (plural ? 's' : '')
+      def name_singular 
+        name_without_namespace.downcase
+      end
+      
+      def name_plural
+        name_singular + 's'
       end
     
       def to_sym() 

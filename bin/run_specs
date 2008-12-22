@@ -1,36 +1,11 @@
-#!/usr/bin/env ruby
-require 'rubygems'
-require 'spec'
-require File.expand_path(File.join(File.dirname(__FILE__), "..")) + '/lib/suprdate'
-include Suprdate
-
-def rand_int(size = 80_000) (rand * size).round - size / 2 end
-def y_rand_int() (rand * 8000).round + 1600 end
-
-def rand_between(range)
-  (rand * (range.last - range.first)).round + range.first
-end
-
-def date_parts(num_parts)
-  [rand_between(1600..2000), rand_between(1..12), rand_between(1..28)][0..num_parts - 1]
-end
-
-alias :d :Day
-alias :m :Month
-alias :y :Year
-alias :r :Repeats
-
-def require_specs(list)
-  list.each { |file| require "#{BASE_DIR}/spec/#{file}.spec" }
-end
-
-require_specs %w{
-  suprdate              
-  day               
-  month                 
-  year
-  inter_class_ranges
-  dsl
-}
-
-Spec::Runner::ExampleGroupRunner.new(Spec::Runner.options)
+#!/usr/bin/env bash
+# runs run_specs.rb with warnings on filtering the warnings I don't care about
+set -o nounset
+if ! ls ../suprdate > /dev/null; then
+  echo "You're in the wrong working directory" >&2
+  exit 1
+fi
+stderr_dump_path='tmp/warnings'
+ruby -w bin/run_specs.rb 2> "$stderr_dump_path"
+# supresses warnings from rspec and from use of should == in spec files
+cat "$stderr_dump_path" | grep -v 'rspec-' | grep -v '.spec.rb.*== in void context'

@@ -34,7 +34,7 @@ end
 
 describe DSL::Sentence do
 
-  UNITS = UNIT_CLASSES.map { |c| [c.to_word(false), c.to_word(true)] }.flatten
+  UNITS = UNIT_CLASSES.map { |c| [c.name_singular, c.name_plural] }.flatten
   
   before(:each) do
     reset
@@ -111,6 +111,13 @@ describe 'paragraphs, sentences and clauses integrated' do
     }
   end
   
+  it "should allowed several sentences to be chained with and"
+  
+  it "should collect all the intervals" do # may not belong here
+    pending
+    DSL::Paragraph.new.every(3).days.in.every(2).months.serialize
+  end
+  
 end
 
 describe DSL::Paragraph do
@@ -146,7 +153,7 @@ describe 'chain_attr_accessor' do
 
   chain_attr_accessor :foo
   
-  it "should return @foo if no args and leave @foo unaltered" do
+  it "should return @foo if no arguments and leave @foo unaltered" do
     @foo = rand_int
     foo().should == @foo
   end
