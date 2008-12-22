@@ -8,10 +8,9 @@ describe Day, 'creation' do
   end
   
   it "should prevent the creation of impossible days" do
-    # TODO: what error?
-    lambda { d(2000, 1, 40) }.should raise_error
-    lambda { d(2000, 2, 30) }.should raise_error
-    lambda { d(2000, 4, 31) }.should raise_error
+    lambda { d(2000, 1, 40) }.should raise_error(DateConstructionError)
+    lambda { d(2000, 2, 30) }.should raise_error(DateConstructionError)
+    lambda { d(2000, 4, 31) }.should raise_error(DateConstructionError)
   end
 
 end
@@ -49,12 +48,11 @@ describe Day, 'readers' do
     d(2008, 11, 30).weekday_occurrence_this_month.should == :fifth
     d(2008, 11, 19).weekday_occurrence_this_month.should == :third
   end
-
+  
   it "should know when it is one" do
     d(2000, 2, 29).leap?.should == true
     d(2000, 2, 28).leap?.should == false
-    # TODO: what error?
-    lambda { d(2001, 2, 29) }.should raise_error
+    lambda { d(2001, 2, 29) }.should raise_error(DateConstructionError)
   end
 
 end

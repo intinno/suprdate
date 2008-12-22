@@ -6,9 +6,31 @@ describe DSL, 'event' do
   
 end
 
-# TODO: duplication of all the delegation checks
-# TODO: duplication of traversal in sentence for clauses and paragraph for sentences
-# TODO: use instance_variables to determine that to_hash is complete
+describe DSL::ClauseFactory do
+
+  before(:each) do
+    @sentence = mock DSL::Sentence
+    @sentence.should_receive(:unit).once.and_return(unit_return = rand_int)
+    @cf = DSL::ClauseFactory.new
+  end
+
+  it "should create a list clause if list has length" do
+    clause = @cf.make(@sentence, list = [1,2,3])
+    clause.should be_instance_of(DSL::ListClause)
+    clause.list.should == list
+  end
+  
+  it "should create a range clause if list is empty" do
+    clause = @cf.make(@sentence, [])
+    clause.should be_instance_of(DSL::RangeClause)
+  end
+  
+  it "should create clauses that can refer back to original @sentence" do
+    clause = @cf.make(@sentence, [])
+    clause.sentence.should == @sentence
+  end
+
+end
 
 describe DSL::Sentence do
 
@@ -37,95 +59,42 @@ describe DSL::Sentence do
     @sentence.every(expected = rand_int).interval.should == expected
   end
   
-  it "has unit methods that create a clause" do
+  it "should use ClauseFactory for clause creation" do
     with_units do |m|
-      @sentence.send(m).should be_kind_of(DSL::AbstractClause)
+      @sentence.clause_factory = mcf = mock('clause factory')
+      mcf.should_receive(:make).with(@sentence, list = Array.new(rand_between(1..5))).once.and_return(rval = rand_int)
+      @sentence.send(m, *list).should == rval
     end
-  end
-  
-  it "should create clauses that can refer back to original sentence" do
-    with_units do |m|
-      clause = @sentence.send(m)
-      @sentence.clauses.should == [clause]
-      clause.sentence.should == @sentence
-    end
-  end
-  
-  it "should create a range clause if no arguments specified with the unit" do
-    with_units do |m|
-      @sentence.send(m).should be_kind_of(DSL::RangeClause)
-    end
-  end
-  
-  it "should create a list clause if arguments are specified with the unit and hand on those 
-  arguments to the clause" do
-    pending 'clause creation can be mocked'
-    with_units do |m|
-      args = [2000, 2004, 2008]
-      clause = @sentence.send(m, *args)
-      clause.should be_kind_of(DSL::ListClause)
-      # clause.should_receive(:polarity=).once.with(:inclusion)
-      clause.list.should == args
-    end
-  end
-  
-  it "should delegate 'serialize' to paragraph" do
-    @paragraph.should_receive(:serialize).with(*args = [1,3,7]).once.
-      and_return(return_from_paragraph_serialize = rand_int)
-    @sentence.serialize(*args).should == return_from_paragraph_serialize
-  end
-  
-  it "should delegate 'and' to paragraph" do
-    @paragraph.should_receive(:and).once.
-      and_return(return_from_paragraph_and = rand_int)
-    @sentence.and.should == return_from_paragraph_and
   end
   
   it "should have a 'to_hash' form that traverses clauses" do
     @sentence.clauses << a = mock('clause a')
     @sentence.clauses << b = mock('clause b')
     @sentence.clauses << c = mock('clause c')
-    rvs = []
+    rvals = []
     [a,b,c].each do |clause|
-      rvs << (rv = rand_int)
-      clause.should_receive(:to_hash).once.and_return(rv)
+      rvals << (rval = rand_int)
+      clause.should_receive(:to_hash).once.and_return(rval)
     end
-    @sentence.to_hash[:clauses].should == rvs
+    @sentence.to_hash[:clauses].should == rvals
   end
   
 end
 
 describe DSL::AbstractClause do
 
-  def mock_sentence
-    rv = mock(DSL::Sentence)
-    rv.stub!(:unit => 1)
-    rv
+  before(:each) do
+    @sentence = mock(DSL::Sentence)
+    @sentence.stub!(:unit => 1)
   end
   
-  it "should copy the current unit from the sentence that created it" do
-    # sentence is free to change the state of unit for the purpose of creating additional clauses
-    sentence = mock_sentence
-    sentence.should_receive(:unit).once.and_return(expected = rand_int)
-    DSL::AbstractClause.new(sentence).unit.should == expected
+  it "should copy the current unit from the @sentence that created it" do
+    @sentence.should_receive(:unit).once.and_return(expected = rand_int)
+    DSL::AbstractClause.new(@sentence).unit.should == expected
   end
   
-  it "should return the sentence with 'in'" do
-    DSL::AbstractClause.new(sentence = mock_sentence).in.should == sentence
-  end
-  
-  it "should delegate 'every' to sentence" do
-    sentence = mock_sentence
-    sentence.should_receive(:every).with(*args = [1,3,7]).once.
-      and_return(return_from_sentence_every = rand_int)
-    DSL::AbstractClause.new(sentence).every(*args).should == return_from_sentence_every
-  end
-  
-  it "should delegate 'serialize' to sentence" do
-    sentence = mock_sentence
-    sentence.should_receive(:serialize).with(*args = [1,3,7]).once.
-      and_return(return_from_sentence_serialize = rand_int)
-    DSL::AbstractClause.new(sentence).serialize(*args).should == return_from_sentence_serialize
+  it "should return the @sentence with 'in'" do
+    DSL::AbstractClause.new(@sentence).in.should == @sentence
   end
   
 end
@@ -161,13 +130,32 @@ describe DSL::Paragraph do
     @paragraph.sentences << a = mock('sentence a')
     @paragraph.sentences << b = mock('sentence b')
     @paragraph.sentences << c = mock('sentence c')
-    rvs = []
+    rvals = []
     [a,b,c].each do |clause|
-      rvs << (rv = rand_int)
-      clause.should_receive(:to_hash).once.and_return(rv)
+      rvals << (rval = rand_int)
+      clause.should_receive(:to_hash).once.and_return(rval)
     end
-    @paragraph.to_hash[:sentences].should == rvs
+    @paragraph.to_hash[:sentences].should == rvals
   end
   
+end
+
+describe 'chain_attr_accessor' do
+  
+  extend DSL::ChainAttrAccessor
+
+  chain_attr_accessor :foo
+  
+  it "should return @foo if no args and leave @foo unaltered" do
+    @foo = rand_int
+    foo().should == @foo
+  end
+  
+  it "should set @foo to the argument list if list has length and return self" do
+    @foo = nil
+    args = Array.new(rand_between(1..5)) { rand }
+    foo(*args).should == self
+    @foo.should == args
+  end
 
 end

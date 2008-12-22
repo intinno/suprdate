@@ -2,23 +2,23 @@ module Suprdate
   
   class Year
   
-    attr_accessor :month_factory, :day_factory, :week_factory, 
-                  :week_definition
+    attr_accessor :month_factory, :day_factory, :week_factory, :week_definition
     attr_reader   :value
     
     class << self
-      include ClassNameAsWordAndSymbol
+      include Utility::CleanName
     end
 
     MINIMUM_VALUE = 1582 # year when leap years were first standardized
 
     def initialize(v) 
       v = v.to_i
-      if v < MINIMUM_VALUE
-        raise "Attempted to create a year valued #{v}, #{MINIMUM_VALUE - v} less than minimum allowed value of #{MINIMUM_VALUE}"
-      end
+      raise DateConstructionError.new(
+        "Attempted to create a year valued #{v}, #{MINIMUM_VALUE - v} less than minimum " +
+        "allowed value of #{MINIMUM_VALUE}"
+      ) if v < MINIMUM_VALUE
       @value = v
-      self
+      self # self return required because initialized is called explicitly in places
     end
     
     protected :initialize # for + and -
@@ -31,7 +31,7 @@ module Suprdate
   
     def month(*ies)
       ies = [1] if ies.empty?
-      disarray(ies.map { |i| new_month(i) })
+      Utility::disarray(ies.map { |i| new_month(i) })
     end
   
     def +(increase) new(@value + increase) end

@@ -2,33 +2,61 @@ module Suprdate
   
   BASE_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..'))
   LIB_DIR = File.join(BASE_DIR,"lib")
-
-  module ClassNameAsWordAndSymbol
+  
+  module Utility
     
-    def to_word(plural) 
-      name_without_namespace.downcase + (plural ? 's' : '')
+    def self.disarray(array) 
+      if array.size == 1 then array[0] else array end
     end
     
-    def to_sym() 
-      @symbol = name_without_namespace.downcase.to_sym if @symbol.nil?
-      @symbol
-    end
-  
-    private
-  
-      def name_without_namespace
-        name[to_s.rindex('::') + 2 .. -1]
+    # some inflection on the #name of something
+    module CleanName
+    
+      def to_word(plural) 
+        name_without_namespace.downcase + (plural ? 's' : '')
       end
+    
+      def to_sym() 
+        @symbol = name_without_namespace.downcase.to_sym if @symbol.nil?
+        @symbol
+      end
+  
+      private
+  
+        def name_without_namespace
+          name[to_s.rindex('::') + 2 .. -1]
+        end
 
+    end
+  
   end
+
+  # filters elements from lists at specified frequency
+  # freq may be specified as an integer or symbol
+  def every(freq, enum, &block)
+    freq = OCCURANCES_SYM_TO_I[freq] if freq.kind_of?(Symbol)
+    rval = if block
+      enum
+    else
+      block = lambda { |value| rval << value } 
+      []
+    end
+    enum.each_with_index do |value, key|
+      block.call(value) if key % freq == 0
+    end
+    rval
+  end
+  
+  module Inf; end
+  
+  class DateConstructionError < RuntimeError; end
 
 end
 
-require Suprdate::LIB_DIR + "/suprdate/day"
-require Suprdate::LIB_DIR + "/suprdate/month"
-require Suprdate::LIB_DIR + "/suprdate/year"
-require Suprdate::LIB_DIR + "/suprdate/builder"
-require Suprdate::LIB_DIR + "/suprdate/dsl"
+require Suprdate::LIB_DIR + '/suprdate/day'
+require Suprdate::LIB_DIR + '/suprdate/month'
+require Suprdate::LIB_DIR + '/suprdate/year'
+require Suprdate::LIB_DIR + '/suprdate/builder'
 
 module Suprdate
     
@@ -75,32 +103,11 @@ module Suprdate
   
   OCCURANCES_SYM_TO_I = {
     :first => 1, :second  => 2, :third  => 3, :fourth => 4, :fifth => 5,
-    :sixth => 6, :seventh => 7, :eighth => 8, :ninth => 9, :tenth => 10
+    :sixth => 6, :seventh => 7, :eighth => 8, :ninth  => 9, :tenth => 10
   }
   
   WEEKDAY_RANGE = 1..7
-
-  # if array.size == 1 then array[0] else array end
-  def disarray(array) 
-    if array.size == 1 then array[0] else array end
-  end
-
-  # filters elements from lists at specified frequency
-  # freq may be specified as an integer or symbol
-  def every(freq, enum, &block)
-    freq = OCCURANCES_SYM_TO_I[freq] if freq.kind_of?(Symbol)
-    rv = if block
-      enum
-    else
-      block = lambda { |value| rv << value } 
-      []
-    end
-    enum.each_with_index do |value, key|
-      block.call(value) if key % freq == 0
-    end
-    rv
-  end
-  
-  module Inf; end
   
 end
+
+require Suprdate::LIB_DIR + "/suprdate/dsl"

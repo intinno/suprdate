@@ -6,7 +6,7 @@ module Suprdate
     attr_reader :value, :year
   
     class << self
-      include ClassNameAsWordAndSymbol
+      include Utility::CleanName
     end
 
     def initialize(year, value)
@@ -18,7 +18,7 @@ module Suprdate
       else
         raise "Month value must specified as symbol or be within range #{MONTH_RANGE.inspect}"
       end
-      self
+      self # self return required because initialized is called explicitly in places
     end
     
     protected :initialize
@@ -36,7 +36,7 @@ module Suprdate
   
     def day(*ies)
       ies = [1] if ies.empty?
-      disarray(ies.map do |i|
+      Utility::disarray(ies.map do |i|
         i = num_days + i + 1 if i < 0
         day_factory.new(self, i)
       end)

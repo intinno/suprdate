@@ -54,8 +54,6 @@ class RangeClause < Clause
     self
   end
   
-  # TODO: except method
-  
   alias :times :limit
   
 end
@@ -139,7 +137,6 @@ pp event('Christmas').repeats.day(25).in.month(12).every.year.done
 puts
 pp event('Nicole cooks').every(3).days.and.day(25).in.month(12).every.year.done
 puts
-# TODO: from shouldn't be required here, should be implied by the presence of less specific clause
 
 # 2008-12-1
 # 2008-12-10 

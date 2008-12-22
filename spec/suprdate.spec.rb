@@ -1,14 +1,14 @@
 describe :disarray do
 
   it "should return unaltered array if 2 or more elements" do
-    disarray(array = Array.new(2)).should == array
-    disarray(array = Array.new(5)).should == array
-    disarray(array = Array.new(10)).should == array
+    Utility::disarray(array = Array.new(2)).should == array
+    Utility::disarray(array = Array.new(5)).should == array
+    Utility::disarray(array = Array.new(10)).should == array
   end
   
   it "should return first element of a single element array" do
-    disarray([:foo]).should == :foo
-    disarray([80081355]).should == 80081355
+    Utility::disarray([:foo]).should == :foo
+    Utility::disarray([80081355]).should == 80081355
   end
 
 end
@@ -67,11 +67,11 @@ end
 
 describe 'all unit classes' do
 
-  it "should have ClassNameAsWordAndSymbol included" do
+  it "should have CleanName included" do
     UNIT_CLASSES.each do |klass|
       class << klass
         ancestors
-      end.include?(ClassNameAsWordAndSymbol).should == true
+      end.include?(Utility::CleanName).should == true
     end
   end
 

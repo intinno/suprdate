@@ -7,7 +7,10 @@ describe 'year is like an integer' do
   it "should be comparable with years" do
     (y(ex = y_rand_int) == y(ex)).should == true
     (y(ex = y_rand_int) == y(ex + 1)).should == false
-    # TODO: less than, greater than comparisons
+    (y(2001) > y(2000)).should == true
+    (y(2000) > y(2000)).should == false
+    (y(2000) < y(2001)).should == true
+    (y(2000) < y(2000)).should == false
   end
   
   it "should know the successive year" do
@@ -57,16 +60,19 @@ describe 'year comprised of months' do
   end
 
   it "should return an array of months" do
-    @month_factory.should_receive(:new).with(@year, an_instance_of(Integer)).
-      exactly(NUM_MONTHS_IN_YEAR).times.and_return @mock_month
+    nums = []
+    @month_factory.should_receive(:new) do |year, n|
+      year.should == @year
+      nums << n
+      @mock_month
+    end.exactly(NUM_MONTHS_IN_YEAR).times
       
     @mock_month.should_receive(:day_factory=).with(@mock_day_factory).
       exactly(NUM_MONTHS_IN_YEAR).times.and_return(@mock_day_factory)
       
-    months = @year.months
-    months.nitems.should == NUM_MONTHS_IN_YEAR
-    months[0].should == @mock_month
-    # TODO: this isn't testing that they come out in the right order
+    @year.months[0].should == @mock_month
+    nums.sort.should == nums
+    nums[0].should == 1
   end
   
   it "should provide individual months on demand" do
@@ -95,15 +101,13 @@ end
 describe 'year misc' do
 
   it "should not allow years before 1582 to be created" do
-    lambda { y(300) }.should raise_error
-    lambda { y(1500) }.should raise_error
-    lambda { y(1600 - 100) }.should raise_error
-    lambda { y(1600 + -100) }.should raise_error
-    # these should be fine
-    y(1582); y(1600)
+    lambda { y(300) }.should raise_error(DateConstructionError)
+    lambda { y(1500) }.should raise_error(DateConstructionError)
+    y(1582); y(1600) # don't raise
   end
 
   it "should known when it's a leap year" do
+    # http://en.wikipedia.org/wiki/Leap_year#Gregorian_calendar
     [1600, 1604, 1608, 1612, 2000, 2400, 2800].each do |year|
       y(year).leap?.should be_true
     end

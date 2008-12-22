@@ -13,57 +13,60 @@ describe Month, 'creation' do
   
 end
 
-describe Month, 'comprised of days' do
+describe Month, 'provides correct days' do
 
   it "should know number of days" do
     m(2000, 11).num_days.should == 30
     m(2000, 12).num_days.should == 31
-    m(2001, 2).num_days.should == 28
-    m(2000, 2).num_days.should == 29
+    m(2001, 2 ).num_days.should == 28
+    m(2000, 2 ).num_days.should == 29
   end
   
-  def init(month)
-    @month = month
-    @month.day_factory = @day_factory = mock('day factory')
-    @expected = rand_int
+  def have_days(month, correct_num_days)
+    month.day_factory = mock_day_factory = mock('day factory')
+    received_nums = []
+    expected_return = rand_int
+    mock_day_factory.should_receive(:new) do |m, num|
+      m.should == month
+      received_nums << num
+      expected_return
+    end.exactly(correct_num_days).times
+    month.days.uniq.should == [expected_return]
+    received_nums[0].should == 1
+    received_nums.sort.should == received_nums
   end
   
-  # TODO: this should be a special rspec expectation
-  def days(month, num_days)
-    init month
-    @day_factory.should_receive(:new).
-      with(@month, an_instance_of(Integer)).
-      exactly(num_days).times.and_return @expected
-    day = @month.days
-    day.nitems.should == num_days
-    day[0].should == @expected
+  it "should return an array of days" do
+    # TODO: smell; no should here
+    have_days m(2000, 11), 30
+    have_days m(2000, 12), 31
+  end
+  
+end
+
+describe Month, 'provides individual days' do
+  
+  before(:each) do
+    @month = m(2000, 1)
+    @month.day_factory = @mock_day_factory = mock('day factory')
   end
 
-  it "should return an array of days" do
-    # TODO: isn't test that they come out in the right order
-    days m(2000, 11), 30
-    days m(2000, 12), 31
-  end
-  
   it "should provide multiple individual days on demand" do
-    init m(2000, 1)
-    @day_factory.should_receive(:new).with(@month, 1).once.and_return 1
-    @day_factory.should_receive(:new).with(@month, 3).once.and_return 2
-    @day_factory.should_receive(:new).with(@month, 5).once.and_return 3
+    @mock_day_factory.should_receive(:new).with(@month, 1).once.and_return 1
+    @mock_day_factory.should_receive(:new).with(@month, 3).once.and_return 2
+    @mock_day_factory.should_receive(:new).with(@month, 5).once.and_return 3
     @month.day(1, 3, 5).should == [1, 2, 3]
   end
   
   it "should provide multiple individual days on demand specified with negative offset" do
-    init m(2000, 1)
-    @day_factory.should_receive(:new).with(@month, 31).once.and_return :foo
-    @day_factory.should_receive(:new).with(@month, 29).once.and_return :bar
+    @mock_day_factory.should_receive(:new).with(@month, 31).once.and_return :foo
+    @mock_day_factory.should_receive(:new).with(@month, 29).once.and_return :bar
     @month.day(-1, -3).should == [:foo, :bar]
   end
   
   it "should provide day 1 when no day value actually specified" do
-    init m(2000, 1)
-    @day_factory.should_receive(:new).with(@month, 1).once.and_return @expected
-    @month.day.should == @expected
+    @mock_day_factory.should_receive(:new).with(@month, 1).once.and_return(expected = rand_int)
+    @month.day.should == expected
   end
   
 end

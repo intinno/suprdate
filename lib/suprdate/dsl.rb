@@ -1,5 +1,6 @@
 module Suprdate
   
+  require 'forwardable'
   
   # Contains the classes that make up the language you use to express recurring events. Paragraph, 
   # Sentence and Clause classes are merely designed to capture instructions from the library user.
@@ -35,18 +36,35 @@ module Suprdate
             
     end
     
+    class ClauseFactory
+      
+      def make(sentence, list)
+        if list.empty?
+          clause = RangeClause.new(sentence)
+        else
+          clause = ListClause.new(sentence)
+          clause.list = list
+        end
+        clause
+      end
+      
+    end
+    
     # Composed of a single unit (see Supradate::UNIT_CLASSES) that can then be qualified as a list
     # or a range using a repsective clause.
     class Sentence
       
       DEFAULT_INTERVAL = 1
       attr_reader :interval, :unit, :clauses
-      attr_accessor :paragraph
+      attr_accessor :paragraph, :clause_factory
+      extend Forwardable
+      def_delegators :@paragraph, :serialize, :and
       
       def initialize(paragraph)
         @paragraph = paragraph
         @interval = DEFAULT_INTERVAL
         @clauses = []
+        @clause_factory = ClauseFactory.new
       end
       
       def every(interval = DEFAULT_INTERVAL)
@@ -54,30 +72,13 @@ module Suprdate
         self
       end
       
-      def and
-        @paragraph.and
-      end
-      
-      # CONSIDERATION: generate these methods from UNIT_CLASSES (use to_word(true|false))
-      
-      def year(*list)
-        @unit = Year
-        add_clause(list)
-      end
-      
-      def month(*list)
-        @unit = Month
-        add_clause(list)
-      end
-      
-      def day(*list)
-        @unit = Day
-        add_clause(list)
-      end
-      
-      # traverses up
-      def serialize(*args)
-        @paragraph.serialize(*args)
+      UNIT_CLASSES.each do |klass|
+        define_method(klass.to_word(false)) do |*list|
+          @unit = klass
+          @clauses << clause = @clause_factory.make(self, list)
+          clause
+        end
+        alias_method klass.to_word(true), klass.to_word(false)
       end
       
       # traverses down
@@ -85,42 +86,17 @@ module Suprdate
         {:interval => @interval, :clauses => @clauses.map { |clause| clause.to_hash } }
       end
       
-      alias :months :month
-      alias :years :year
-      alias :days :day
-      
-      protected
-      
-        # CONSIDERATION: extract class; factory that makes this decision
-        def add_clause(list)
-          if list.empty?
-            clause = RangeClause.new(self)
-          else
-            clause = ListClause.new(self)
-            clause.list = list
-          end
-          @clauses << clause
-          clause
-        end
-        
     end
     
     class AbstractClause
       
-      attr_reader :sentence, :unit
+      attr_accessor :sentence, :unit
+      extend Forwardable
+      def_delegators :@sentence, :every, :serialize
       
       def initialize(sentence)
         @sentence = sentence
-        @unit = sentence.unit
-      end
-      
-      def every(*args)
-        @sentence.every(*args)
-      end
-      
-      # traverses up
-      def serialize(*args)
-        @sentence.serialize(*args)
+        @unit = sentence.unit # sentence.unit will change when the next clause is added to sentence
       end
       
       def to_hash
@@ -128,6 +104,21 @@ module Suprdate
       end
       
       alias :in :sentence
+      
+    end
+    
+    module ChainAttrAccessor
+      
+      # Defines methods that allow you to set instance variables without breaking an object chain
+      def chain_attr_accessor(*methods_to_define)
+        methods_to_define.each do |method_name|
+          define_method(method_name) do |*args|
+            return instance_variable_get('@' + method_name.to_s) if args.empty?
+            instance_variable_set('@' + method_name.to_s, args)
+            self
+          end
+        end
+      end
       
     end
     
@@ -144,26 +135,8 @@ module Suprdate
         super.merge(:type => :range, :from => @from, :to => @to, :limit => @limit)
       end
       
-      # TODO: use define_method to generate these hybrid accessors
-      
-      def from(*args)
-        return @from if args.empty?
-        @from = args
-        self
-      end
-      
-      def to(*args)
-        return @to if args.empty?
-        @to = args
-        self
-      end
-      
-      def limit(*args)
-        return @limit if args.empty?
-        @limit = args
-        self
-      end
-      
+      extend ChainAttrAccessor
+      chain_attr_accessor :from, :to, :limit
       alias :times :limit
 
     end

@@ -1,20 +1,20 @@
 module Suprdate
-
+  
   class Day
   
     attr_reader :value, :month
 
     class << self
-      include ClassNameAsWordAndSymbol
+      include Utility::CleanName
     end
 
     def initialize(month, value)
       @month = month
       unless (1..month.num_days).include? value
-        raise "There aren't #{value} days in #{month.of_year_as_s}"
+        raise DateConstructionError.new("There aren't #{value} days in #{month.of_year_as_s}")
       end
       @value = value
-      self
+      self # self return required because initialized is called explicitly in places
     end
     
     def inspect() "#@month-#{@value.to_s.rjust(2, '0')}" end
