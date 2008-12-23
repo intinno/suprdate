@@ -1,16 +1,21 @@
-describe DSL, 'event' do
+describe 'event' do
 
   it "should create a paragraph" do
-    DSL.event.should be_kind_of(DSL::Paragraph)
+    event.should be_kind_of(DSL::Paragraph)
   end
   
+end
+
+def mock_sentence
+  rval = mock DSL::Sentence
+  rval.stub!(:interval => nil, :unit => nil)
+  rval
 end
 
 describe DSL::ClauseFactory do
 
   before(:each) do
-    @sentence = mock DSL::Sentence
-    @sentence.should_receive(:unit).once.and_return(unit_return = rand_int)
+    @sentence = mock_sentence
     @cf = DSL::ClauseFactory.new
   end
 
@@ -81,11 +86,17 @@ describe DSL::Sentence do
   
 end
 
+# Pure interaction spec
 describe DSL::AbstractClause do
 
   before(:each) do
-    @sentence = mock(DSL::Sentence)
-    @sentence.stub!(:unit => 1)
+    @sentence = mock_sentence
+  end
+  
+  it "should copy the current interval from the @sentence that created it" do
+    rand_int = @sentence.interval # once
+    @sentence.should_receive(:interval).once.and_return(expected = rand_int)
+    DSL::AbstractClause.new(@sentence).interval.should == expected
   end
   
   it "should copy the current unit from the @sentence that created it" do
@@ -101,21 +112,30 @@ end
 
 describe 'paragraphs, sentences and clauses integrated' do
 
-  it "should serialize" do
-    # traverses up from clause, through sentence, to paragraph and then back down 
-    # using to_hash
-    DSL::Paragraph.new('foo').every.day.serialize.should == {
+  it "should traverses up from clause, through sentence, to paragraph and then back down using to_hash" do
+    event('foo').serialize.should == {:title => 'foo', :sentences => []}
+    event('foo').every.serialize.should == {:title => 'foo', :sentences => [{:clauses => []}]}
+    event('foo').every.day.serialize.should == {
       :title => 'foo', :sentences => [
-        {:interval => 1, :clauses => [{:unit => Day, :type => :range, :from => nil, :to => nil, :limit => nil}]}
+        {:clauses => [{:interval => 1, :unit => Day, :type => :range, :from => nil, :to => nil, :limit => nil}]}
       ]
     }
   end
   
-  it "should allowed several sentences to be chained with and"
-  
-  it "should collect all the intervals" do # may not belong here
-    pending
-    DSL::Paragraph.new.every(3).days.in.every(2).months.serialize
+  it "should allowed several sentences to be chained with and" do
+    pending 'should a list clause have an interval? what does that mean?'
+    event('foo').every(2).days.in.month(:jan).and.every(3).days.in.month(:feb).serialize.should == {
+      :title => 'foo', :sentences => [
+        {:clauses => [
+          {:interval => 2, :unit => Day, :type => :range, :from => nil, :to => nil, :limit => nil},
+          {:interval => 1, :unit => Month, :type => :list, :list => [:jan]}
+        ]},
+        {:clauses => [
+          {:interval => 3, :unit => Day, :type => :range, :from => nil, :to => nil, :limit => nil},
+          {:interval => 1, :unit => Month, :type => :list, :list => [:feb]}
+        ]}
+      ]
+    }
   end
   
 end
@@ -127,7 +147,7 @@ describe DSL::Paragraph do
   end
 
   it "should create new sentence and delegate call to that object with call to 'every'" do
-    @paragraph.sentence_factory.should_receive(:new).with(@paragraph).once.and_return(sentence = mock('sentence'))
+    @paragraph.sentence_factory.should_receive(:new).with(@paragraph).once.and_return(sentence = mock_sentence)
     sentence.should_receive(:every).with(interval = rand_int).and_return(sentence_return = rand_int)
     @paragraph.every(interval).should == sentence_return
     @paragraph.sentences.should == [sentence]

@@ -13,33 +13,34 @@ describe Month, 'creation' do
   
 end
 
-describe Month, 'provides correct days' do
+describe Month, 'provides days correctly' do
+
+  def have_num_days(expected)
+    simple_matcher('have correct number of days') do |given, matcher|
+      matcher.failure_message = "expected #{given} to have #{expected} number of days"
+      given.num_days == expected && given.days.nitems == expected
+    end
+  end
 
   it "should know number of days" do
-    m(2000, 11).num_days.should == 30
-    m(2000, 12).num_days.should == 31
-    m(2001, 2 ).num_days.should == 28
-    m(2000, 2 ).num_days.should == 29
+    m(2000, 11).should have_num_days(30)
+    m(2000, 12).should have_num_days(31)
+    m(2001, 2 ).should have_num_days(28)
+    m(2000, 2 ).should have_num_days(29)
   end
   
-  def have_days(month, correct_num_days)
+  it "should create days with day factory" do
+    month = m(2000, 1)
     month.day_factory = mock_day_factory = mock('day factory')
-    received_nums = []
-    expected_return = rand_int
-    mock_day_factory.should_receive(:new) do |m, num|
-      m.should == month
-      received_nums << num
-      expected_return
-    end.exactly(correct_num_days).times
-    month.days.uniq.should == [expected_return]
-    received_nums[0].should == 1
-    received_nums.sort.should == received_nums
+    mock_day_factory.should_receive(:new).with(month, an_instance_of(Integer)).at_least(:once)
+    month.days
   end
   
-  it "should return an array of days" do
-    # TODO: smell; no should here
-    have_days m(2000, 11), 30
-    have_days m(2000, 12), 31
+  it "should return days in correct order" do
+    # this is testing more than it claims. Should really be done with a mock day_factory and mock days
+    # but, you know, it's not doing anyone any harm
+    day_numbers = m(2000, 1).days.map { |day| day.value }
+    day_numbers.sort.should == day_numbers 
   end
   
 end

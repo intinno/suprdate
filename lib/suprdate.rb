@@ -54,7 +54,7 @@ module Suprdate
   module Inf; end
   
   class DateConstructionError < RuntimeError; end
-
+  
 end
 
 require Suprdate::LIB_DIR + '/suprdate/day'

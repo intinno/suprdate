@@ -1,5 +1,20 @@
+# http://refactormycode.com/codes/681-rspec-example-does-not-contain-a-should
+
 describe 'range enumeration' do
   
+  def enumerate_infinitely_with(expected)
+    simple_matcher('enumerate infinitely with') do |given, matcher|
+      matcher.failure_message = "expected #{given} to enumerate infinitely with #{expected}"
+      matcher.negative_failure_message = "expected #{given} not to enumerate infinitely with #{expected}"
+      test_times = 50
+      (given..expected).each do |x|
+        test_times -= 1
+        break if test_times <= 0
+      end
+      test_times == 0
+    end
+  end
+
   it "each class should readers that return equivalents of other class" do
     y(2008).month.should == m(2008, 1)
     y(2008).day.should === d(2008, 1, 1)
@@ -21,22 +36,11 @@ describe 'range enumeration' do
     (d(2008, 12, 30)..y(2009)).to_a.should == [d(2008, 12, 30), d(2008, 12, 31), d(2009, 1, 1)]
   end
 
-  def with_infinity(date_unit)
-    limit = 20
-    (date_unit..Inf).each do |x|
-      limit -= 1
-      break if limit <= 0
-    end
-    limit.should == 0
-  end
-
   it "should work with infinity" do
-    # TODO: smell; no should here
-    # http://refactormycode.com/codes/681-rspec-example-does-not-contain-a-should
-    with_infinity y(2008)
-    with_infinity m(2008, 10)
-    with_infinity d(2008, 10, 1)
-    pending 'Add weeks here' if defined? Week
+    y(2008).should enumerate_infinitely_with(Inf)
+    m(2008, 10).should enumerate_infinitely_with(Inf)
+    d(2008, 10, 1).should enumerate_infinitely_with(Inf)
+    w(2008, 1).should enumerate_infinitely_with(Inf) if defined? Week
   end
 
 end
