@@ -8,6 +8,8 @@ module Suprdate
     class << self
       include Utility::CleanName
     end
+    
+    STRFTIME_STR = '%Y-%m'
 
     def initialize(year, value)
       @year = year
@@ -34,12 +36,13 @@ module Suprdate
       (1..num_days).to_a.map { |i| day_factory.new(self, i) }
     end
   
-    def day(*ies)
-      ies = [1] if ies.empty?
-      Utility::disarray(ies.map do |i|
-        i = num_days + i + 1 if i < 0
+    def day(*indices)
+      indices = [1] if indices.empty?
+      rval = indices.map do |i|
+        i = num_days + 1 - i.abs if i < 0
         day_factory.new(self, i)
-      end)
+      end
+      Utility::disarray(rval)
     end
   
     def leap_month?() @value == 2 && @year.leap? end

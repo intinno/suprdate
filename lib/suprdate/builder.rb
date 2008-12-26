@@ -46,22 +46,27 @@ module Suprdate
       send(METHODS_FOR_NUM_PARTS[parts.nitems], *parts)
     end
     
-    def repeats(name = 'Chunky bacon', builder = nil)
-      RepetitionRules.new(name, builder || self)
+    def event(*args)
+      DSL::Paragraph.new(*args)
     end
+
+    alias :repeats :event
     
     # returns the names of the methods that actually build stuff
     def self.building_methods
-      (instance_methods - superclass.instance_methods - Kernel.methods).reject { |name| name =~ /_/ }
+      (instance_methods - superclass.instance_methods - Kernel.methods).
+      reject { |name| name =~ /_/ }.each do |name|
+        def name.to_export() capitalize end
+      end
     end
-  
+    
   end
 
   DEFAULT_BUILDER = Builder.new
 
   # defines the important methods of DEFAULT_BUILDER as stand alone module methods
   Builder.building_methods.each do |name| 
-    define_method(name.capitalize) { |*args| DEFAULT_BUILDER.send(name, *args) }
+    define_method(name.to_export) { |*args| DEFAULT_BUILDER.send(name, *args) }
   end
   
 end

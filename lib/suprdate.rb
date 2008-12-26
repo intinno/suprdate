@@ -19,10 +19,9 @@ module Suprdate
       def name_plural
         name_singular + 's'
       end
-    
+      
       def to_sym() 
-        @symbol = name_without_namespace.downcase.to_sym if @symbol.nil?
-        @symbol
+        name_without_namespace.downcase.to_sym
       end
   
       private
@@ -37,15 +36,18 @@ module Suprdate
 
   # filters elements from lists at specified frequency
   # freq may be specified as an integer or symbol
-  def every(freq, enum, &block)
-    freq = OCCURANCES_SYM_TO_I[freq] if freq.kind_of?(Symbol)
+  def every(freq, list, &block)
+    if freq.kind_of?(Symbol)
+      freq = OCCURANCES_SYM_TO_I[freq]
+      raise 'Specified symbol does not specify a known frequency' if freq.nil?
+    end
     rval = if block
-      enum
+      list
     else
-      block = lambda { |value| rval << value } 
+      block = lambda { |x| rval << x } 
       []
     end
-    enum.each_with_index do |value, key|
+    list.each_with_index do |value, key|
       block.call(value) if key % freq == 0
     end
     rval

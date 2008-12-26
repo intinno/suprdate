@@ -26,6 +26,11 @@ describe Builder, 'normal unit methods' do
     day.year.month_factory.should == Month
   end
   
+  it "should build today" do
+    Builder.new.today.should be_instance_of(Day)
+    Builder.new.today.to_s.should == Time.now.strftime(Day::STRFTIME_STR)
+  end
+  
 end
 
 describe Builder, 'date method' do
@@ -48,12 +53,17 @@ end
 describe Builder, 'exported builder methods' do
   
   it "should be defined" do
-    # CONSIDERATION: change this to use the builder_methods method
-    respond_to?(:Year).should == true
-    respond_to?(:Month).should == true
-    respond_to?(:Day).should == true
+    defined = ['Year', 'Month', 'Day', 'Event', 'Repeats', 'Date', 'Today'].each { |e| respond_to?(e).should == true }
+    (Builder.building_methods.map { |m| m.to_export } - defined).should == []
     Day(2008, 10, 10).should == DEFAULT_BUILDER.day(2008, 10, 10)
   end
 
 end
 
+describe Builder, 'event' do
+
+  it "should create a paragraph" do
+    DEFAULT_BUILDER.event.should be_kind_of(DSL::Paragraph)
+  end
+  
+end

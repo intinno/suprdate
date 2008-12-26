@@ -1,11 +1,7 @@
 module Suprdate
   
   require 'forwardable'
-
-  def event(*args)
-    DSL::Paragraph.new(*args)
-  end
-  
+ 
   # Contains the classes that make up the language you use to express recurring events. Paragraph, 
   # Sentence and Clause classes are merely designed to capture instructions from the library user.
   # A set of visitors are used to turn those instructions into the desired result. This design 
@@ -94,20 +90,17 @@ module Suprdate
     
     class AbstractClause
       
-      attr_accessor :sentence, :unit, :interval
+      attr_accessor :sentence, :unit
       extend Forwardable
       def_delegators :@sentence, :every, :serialize, :and
       
       def initialize(sentence)
         @sentence = sentence
-        # these instance variables will change when the next clause 
-        # is added to sentence so they must be copied here
         @unit = sentence.unit
-        @interval = sentence.interval
       end
       
       def to_hash
-        {:type => :abstract, :interval => @interval, :unit => @unit}
+        {:type => :abstract, :unit => @unit}
       end
       
       alias :in :sentence
@@ -131,15 +124,18 @@ module Suprdate
     
     class RangeClause < AbstractClause
 
-      def initialize(*args)
-        super(*args)
-        @from = nil
-        @to = nil
-        @limit = nil
+      attr_accessor :interval
+
+      def initialize(sentence)
+        super(sentence)
+        @interval = sentence.interval
+        @from, @to, @limit = nil
       end
 
       def to_hash
-        super.merge(:type => :range, :from => @from, :to => @to, :limit => @limit)
+        super.merge(
+          :interval => @interval, :type => :range, :from => @from, :to => @to, :limit => @limit
+        )
       end
       
       extend ChainAttrAccessor

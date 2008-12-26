@@ -10,6 +10,7 @@ module Suprdate
     end
 
     MINIMUM_VALUE = 1582 # year when leap years were first standardized
+    STRFTIME_STR = '%Y'
 
     def initialize(v) 
       v = v.to_i
@@ -29,9 +30,9 @@ module Suprdate
       @value - operand.value
     end
   
-    def month(*ies)
-      ies = [1] if ies.empty?
-      Utility::disarray(ies.map { |i| new_month(i) })
+    def month(*indices)
+      indices = [1] if indices.empty?
+      Utility::disarray(indices.map { |i| new_month(i) })
     end
   
     def +(increase) new(@value + increase) end

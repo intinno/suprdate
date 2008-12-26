@@ -17,6 +17,8 @@ module Suprdate
       self # self return required because initialized is called explicitly in places
     end
     
+    STRFTIME_STR = '%Y-%m-%d'
+    
     def inspect() "#@month-#{@value.to_s.rjust(2, '0')}" end
     def year() @month.year end
     def time() Time.mktime(*values) end

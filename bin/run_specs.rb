@@ -19,17 +19,5 @@ alias :m :Month
 alias :y :Year
 alias :r :Repeats
 
-def require_specs(list)
-  list.each { |file| require "#{BASE_DIR}/spec/#{file}.spec" }
-end
-
-require_specs %w{
-  suprdate              
-  day               
-  month                 
-  year
-  inter_class_ranges
-  dsl
-}
-
-Spec::Runner::ExampleGroupRunner.new(Spec::Runner.options)
+Dir["#{BASE_DIR}/spec/*.spec.rb"].each { |f| require f }
+Spec::Runner::ExampleGroupRunner.new(nil)
