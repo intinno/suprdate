@@ -37,10 +37,10 @@ describe 'range enumeration' do
   end
 
   it "should work with infinity" do
-    y(2008).should enumerate_infinitely_with(Inf)
-    m(2008, 10).should enumerate_infinitely_with(Inf)
-    d(2008, 10, 1).should enumerate_infinitely_with(Inf)
-    w(2008, 1).should enumerate_infinitely_with(Inf) if defined? Week
+    y(2008).should enumerate_infinitely_with(Infinity)
+    m(2008, 10).should enumerate_infinitely_with(Infinity)
+    d(2008, 10, 1).should enumerate_infinitely_with(Infinity)
+    w(2008, 1).should enumerate_infinitely_with(Infinity) if defined? Week
   end
 
 end

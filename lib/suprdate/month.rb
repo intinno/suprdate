@@ -1,31 +1,27 @@
 module Suprdate
 
-  class Month
+  class Month < Unit
   
     attr_accessor :day_factory
-    attr_reader :value, :year
+    attr_reader :year
   
-    class << self
-      include Utility::CleanName
-    end
-    
     STRFTIME_STR = '%Y-%m'
 
     def initialize(year, value)
       @year = year
       @value = if value.kind_of?(Symbol)
-        MONTH_SYM_TO_I[value]
+        MONTHS_SYM_TO_I[value]
       elsif MONTH_RANGE.include?(value)
         value
       else
         raise "Month value must specified as symbol or be within range #{MONTH_RANGE.inspect}"
       end
-      self # self return required because initialized is called explicitly in places
+      self # intentional
     end
     
     protected :initialize
   
-    def to_sym() MONTH_I_TO_SYM[@value] end
+    def to_sym() MONTHS_AS_SYM[@value] end
   
     def num_days
       return 29 if leap_month?
@@ -49,7 +45,7 @@ module Suprdate
     def inspect() "#@year-#{@value.to_s.rjust(2, '0')}" end
 
     def <=>(operand)
-      return -1 if operand == Inf
+      return -1 if operand == Infinity
       operand = operand.month
       (@year.value * NUM_MONTHS_IN_YEAR + @value) - (operand.year.value * NUM_MONTHS_IN_YEAR + operand.value)
     end
@@ -59,19 +55,13 @@ module Suprdate
     def +(increase) new_from_sum(sum + increase) end
     def -(decrease) new_from_sum(sum - decrease) end
     def succ() self + 1 end
-    def of_year_as_sym() MONTH_I_TO_SYM[@value] end
-    def of_year_as_s() MONTH_I_TO_STRING[@value] end
+    def of_year_as_sym() MONTHS_AS_SYM[@value] end
+    def of_year_as_s() MONTHS_AS_STR[@value] end
     def month() self end
   
-    alias :to_i :value
     alias :of_year_as_i :value
-    alias :to_s :inspect
     alias :[] :day
-    include Comparable
   
-    # dup this object and give it a new value
-    def new(*args) dup.initialize(*args) end
-
     protected
     
     # total number of months from 0 years 0 months

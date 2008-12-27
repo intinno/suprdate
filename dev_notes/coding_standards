@@ -1,0 +1,5 @@
+- The maximum permissible line length is 100 characters.
+- The condense single line methods definition syntax is permitted when the total length of the line
+  does not exceed 70 characters
+- Do not use any additional indention for method definitions that appear underneth visibility 
+  declarations (public, protected and private).

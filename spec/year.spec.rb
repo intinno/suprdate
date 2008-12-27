@@ -103,7 +103,7 @@ describe 'year misc' do
   it "should not allow years before 1582 to be created" do
     lambda { y(300) }.should raise_error(DateConstructionError)
     lambda { y(1500) }.should raise_error(DateConstructionError)
-    y(1582); y(1600) # don't raise
+    lambda { y(1582); y(1600) }.should_not raise_error
   end
 
   it "should known when it's a leap year" do

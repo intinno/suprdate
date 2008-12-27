@@ -37,8 +37,8 @@ describe Month, 'provides days correctly' do
   end
   
   it "should return days in correct order" do
-    # this is testing more than it claims. Should really be done with a mock day_factory and mock days
-    # but, you know, it's not doing anyone any harm
+    # CONSIDERATION: This spec is overzelously testing more than it claims. Consider using
+    # mocks over state or repurposing as an integration test.
     day_numbers = m(2000, 1).days.map { |day| day.value }
     day_numbers.sort.should == day_numbers 
   end

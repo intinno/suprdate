@@ -90,14 +90,12 @@ describe Day, 'math and logic' do
 
   it "should hold state after arithmetic" do
     a = d(2000, 1, 28)
-    # day has no writable state of it's own but month does
-    # so I'm setting a value on the month:
-    # day_factory is not used in any of these operations so it's ok to abuse it
-    # with a nonsense value
-    a.year.month_factory = :foo 
-    b = a + 5 # the month and the day changed
-    # but the month should still hold the original state
-    b.year.month_factory.should == :foo
+    # Because Day has no writable state of it's own (but Year does) I am assigning a random value
+    # to month_factory (an attribute on the year).
+    a.year.month_factory = expected = rand_int 
+    b = a + 5 # the month and the day change
+    # but the month should still hold the original random value
+    b.year.month_factory.should == expected
     b.object_id.should_not == a.object_id
   end
   

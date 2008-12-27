@@ -1,12 +1,23 @@
 module Suprdate
   
   require 'forwardable'
- 
+  
   # Contains the classes that make up the language you use to express recurring events. Paragraph, 
   # Sentence and Clause classes are merely designed to capture instructions from the library user.
   # A set of visitors are used to turn those instructions into the desired result. This design 
   # decouples DSL structure from it's implementation.
   module DSL
+    
+    class ExpressionError < RuntimeError
+    
+      def self.interval_on_list(list, interval)
+        new("Intervals may not be associated with lists: #{interval.inspect} with #{list.inspect}")
+      end
+      
+    end
+        
+    NO_INTERVAL = 1 # continuous
+    DEFAULT_EXCLUSION_STATE = false # include
         
     # Chains together one or more sentences
     class Paragraph
@@ -42,6 +53,9 @@ module Suprdate
         if list.empty?
           clause = RangeClause.new(sentence)
         else
+          unless sentence.interval == NO_INTERVAL
+            raise ExpressionError.interval_on_list(list, sentence.interval)
+          end
           clause = ListClause.new(sentence)
           clause.list = list
         end
@@ -54,20 +68,20 @@ module Suprdate
     # or a range using a repsective clause.
     class Sentence
       
-      DEFAULT_INTERVAL = 1
-      attr_reader :interval, :unit, :clauses
+      attr_reader :interval, :unit, :clauses, :exclusion
       attr_accessor :paragraph, :clause_factory
       extend Forwardable
       def_delegators :@paragraph, :serialize, :and
       
       def initialize(paragraph)
         @paragraph = paragraph
-        @interval = DEFAULT_INTERVAL
+        @interval = NO_INTERVAL
         @clauses = []
         @clause_factory = ClauseFactory.new
+        @exclusion = DEFAULT_EXCLUSION_STATE
       end
       
-      def every(interval = DEFAULT_INTERVAL)
+      def every(interval = NO_INTERVAL)
         @interval = interval
         self
       end
@@ -86,24 +100,35 @@ module Suprdate
         {:clauses => @clauses.map { |clause| clause.to_hash } }
       end
       
+      def except
+        @exclusion = true
+        every
+      end
+      
+      def include
+        @exclusion = false
+        every
+      end
+      
     end
     
     class AbstractClause
       
-      attr_accessor :sentence, :unit
+      attr_accessor :sentence, :unit, :exclusion
       extend Forwardable
-      def_delegators :@sentence, :every, :serialize, :and
+      def_delegators :@sentence, :every, :serialize, :and, :except, :include
       
       def initialize(sentence)
         @sentence = sentence
         @unit = sentence.unit
+        @exclusion = sentence.exclusion
       end
       
       def to_hash
-        {:type => :abstract, :unit => @unit}
+        {:type => :abstract, :unit => @unit, :exclusion => @exclusion}
       end
       
-      alias :in :sentence
+      alias :in :every
       
     end
     

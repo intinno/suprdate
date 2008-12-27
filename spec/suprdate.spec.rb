@@ -16,9 +16,41 @@ describe Suprdate, :every do
   end
   
   it "should raise if using an unknown symbol" do
-    lambda { every(:keith, [1,2,3]) }.should raise_error('Specified symbol does not specify a known frequency')
+    lambda { every(:keith, [1,2,3]) }.should raise_error(IndexError)
   end
   
+end
+
+module BeAListOfIdenticialObjects
+  
+  def be_a_list_of_identicial_objects(expected)
+    simple_matcher('be a list of the same objects') do |given, matcher|
+      matcher.failure_message = "expected #{given.inspect} to be the same as #{expected.inspect}"
+      matcher.negative_failure_message = 
+        "expected #{given.inspect} not to be the same as #{expected.inspect}"
+      sorted_object_ids(expected) == sorted_object_ids(given)
+    end
+  end
+  
+  private
+  def sorted_object_ids(list) list.map { |x| x.object_id }.sort end
+    
+end
+
+describe Suprdate::UNIT_CLASSES do
+
+  include BeAListOfIdenticialObjects
+
+  it "should contain all the units" do
+    units = []
+    Module.constants.each do |const|
+      const = Kernel.const_get(const)
+      next unless const.respond_to?(:ancestors)
+      const.ancestors[1..-1].find { |x| units << const if x == Unit }
+    end
+    UNIT_CLASSES.should be_a_list_of_identicial_objects(units)
+  end
+
 end
 
 describe Suprdate, :disarray do
@@ -36,11 +68,11 @@ describe Suprdate, :disarray do
 
 end
 
-describe Utility::CleanName do
+describe Utility::CleanConstantName do
 
   module FooNamespace
     class Monkey
-      extend Utility::CleanName
+      extend Utility::CleanConstantName
     end
   end  
   
@@ -94,11 +126,25 @@ end
 
 describe 'all unit classes' do
 
-  it "should have CleanName included" do
+  it "should have CleanConstantName included" do
     UNIT_CLASSES.each do |klass|
       class << klass
         ancestors
-      end.include?(Utility::CleanName).should == true
+      end.include?(Utility::CleanConstantName).should == true
+    end
+  end
+  
+  include BeAListOfIdenticialObjects
+  
+  it "should have polymorphic interfaces" do
+    units = [y(2000), m(2000, 1), d(2000, 1, 1)]
+    # to make sure these really are all the units.
+    units.map { |i| i.class }.should be_a_list_of_identicial_objects(UNIT_CLASSES)
+    units.each do |u|
+      u.day.class.should == Day
+      u.month.class.should == Month
+      u.year.class.should == Year
+      u.days[0].class.should == Day
     end
   end
 

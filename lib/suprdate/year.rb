@@ -1,14 +1,9 @@
 module Suprdate
   
-  class Year
+  class Year < Unit
   
     attr_accessor :month_factory, :day_factory, :week_factory, :week_definition
-    attr_reader   :value
     
-    class << self
-      include Utility::CleanName
-    end
-
     MINIMUM_VALUE = 1582 # year when leap years were first standardized
     STRFTIME_STR = '%Y'
 
@@ -18,14 +13,13 @@ module Suprdate
         "Attempted to create a year valued #{v}, #{MINIMUM_VALUE - v} less than minimum " +
         "allowed value of #{MINIMUM_VALUE}"
       ) if v < MINIMUM_VALUE
-      @value = v
-      self # self return required because initialized is called explicitly in places
+      super(v)
     end
     
     protected :initialize # for + and -
     
     def <=>(operand) 
-      return -1 if operand == Inf
+      return -1 if operand == Infinity
       operand = operand.year
       @value - operand.value
     end
@@ -53,13 +47,7 @@ module Suprdate
       false
     end
   
-    alias :to_i :value
-    alias :to_s :inspect
     alias :[] :month
-    include Comparable
-      
-    # dup this object and give it a new value
-    def new(*args) dup.initialize(*args) end
       
     protected
 

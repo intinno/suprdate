@@ -36,16 +36,16 @@ end
 describe Builder, 'date method' do
 
   it "should abstract the other methods of Builder" do
-    Builder::NUM_PARTS_RANGE.each do |num_parts|
+    Builder::DATE_NUM_PARTS_RANGE.each do |num_parts|
       b = Builder.new
-      b.should_receive(Builder::METHODS_FOR_NUM_PARTS[num_parts]).once.and_return(expected = rand_int)
+      b.should_receive(Builder::UNIT_NUM_PARTS[num_parts]).once.and_return(expected = rand_int)
       b.date(*date_parts(num_parts)).should == expected
     end
   end
   
   it "should raise if wrong number of args" do
-    lambda { Builder.new.date(1,2,3,4) }.should raise_error(ArgumentError)
-    lambda { Builder.new.date() }.should raise_error(ArgumentError)
+    lambda { Builder.new.date(1,2,3,4) }.should raise_error(DateConstructionError)
+    lambda { Builder.new.date() }.should raise_error(DateConstructionError)
   end
 
 end
@@ -54,7 +54,7 @@ describe Builder, 'exported builder methods' do
   
   it "should be defined" do
     defined = ['Year', 'Month', 'Day', 'Event', 'Repeats', 'Date', 'Today'].each { |e| respond_to?(e).should == true }
-    (Builder.building_methods.map { |m| m.to_export } - defined).should == []
+    (Builder.builder_methods.map { |m| m.to_export } - defined).should == []
     Day(2008, 10, 10).should == DEFAULT_BUILDER.day(2008, 10, 10)
   end
 
@@ -63,7 +63,7 @@ end
 describe Builder, 'event' do
 
   it "should create a paragraph" do
-    DEFAULT_BUILDER.event.should be_kind_of(DSL::Paragraph)
+    DEFAULT_BUILDER.event.should be_kind_of(DSL::Sentence)
   end
   
 end

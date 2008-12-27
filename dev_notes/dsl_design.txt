@@ -1,4 +1,4 @@
-Not doing for now:
+Not doing these for now:
   - durations
   - time
 

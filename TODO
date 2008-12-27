@@ -1,9 +1,9 @@
 === To Do
 
-  - RepetitionRules
-  - Gem spec
-  - look across year, month and day specs and make things more consistent
-  - look across year, month and day specs and remove duplication (consider behaves_like)
+  - Documentation of how to use the DSL. 
+    - What different things mean
+    - How it's constructed
+    - Results yielded
   - Generally throw more exceptions, will lead to errors that are easier to fix
   - Odd extra few comments for improving comprehensibility
   - API documentation

@@ -32,7 +32,7 @@ class RangeClause < Clause
   def initialize(*args)
     super(*args)
     @from = nil
-    @to = Inf
+    @to = Infinity
     @limit = nil
   end
   
@@ -108,7 +108,7 @@ class Sentence
   
 end
 
-module Inf; end
+module Infinity; end
 
 require 'rubygems'
 require 'pp'

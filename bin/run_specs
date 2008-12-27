@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# runs run_specs.rb with warnings on filtering the warnings I don't care about
+# runs run_specs.rb with warnings on and filters out the warnings I am not interested in
 set -o nounset
 if ! ls ../suprdate > /dev/null; then
-  echo "You're in the wrong working directory" >&2
+  echo "You are in the wrong working directory" >&2
   exit 1
 fi
 stderr_dump_path='tmp/warnings'

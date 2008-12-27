@@ -1,6 +1,6 @@
 def mock_sentence
   rval = mock DSL::Sentence
-  rval.stub!(:interval => nil, :unit => nil)
+  rval.stub!(:interval => DSL::NO_INTERVAL, :unit => nil, :every => rval, :exclusion => DSL::DEFAULT_EXCLUSION_STATE)
   rval
 end
 
@@ -91,6 +91,11 @@ describe 'abstract clause', :shared => true do
     @clause_class.new(@sentence).unit.should == expected
   end
   
+  it "should copy the current exclusion from the @sentence that created it" do
+    @sentence.should_receive(:exclusion).once.and_return(expected = rand_int)
+    @clause_class.new(@sentence).exclusion.should == expected
+  end
+  
   it "should return the @sentence with 'in'" do
     @clause_class.new(@sentence).in.should == @sentence
   end
@@ -99,7 +104,7 @@ end
 
 describe DSL::RangeClause do
 
-  it_should_behave_like('abstract clause')
+  it_should_behave_like 'abstract clause'
 
   before(:each) do
     @sentence = mock_sentence
@@ -115,7 +120,7 @@ end
 
 describe DSL::ListClause do
 
-  it_should_behave_like('abstract clause')
+  it_should_behave_like 'abstract clause'
   
   before(:each) do
     @sentence = mock_sentence
@@ -127,28 +132,25 @@ end
 describe 'paragraphs, sentences and clauses integrated' do
 
   it "should traverses up from clause, through sentence, to paragraph and then back down using to_hash" do
-    Event('foo').serialize.should == {:title => 'foo', :sentences => []}
-    Event('foo').every.serialize.should == {:title => 'foo', :sentences => [{:clauses => []}]}
-    Event('foo').every.day.serialize.should == {
-      :title => 'foo', :sentences => [
-        {:clauses => [{:interval => 1, :unit => Day, :type => :range, :from => nil, :to => nil, :limit => nil}]}
-      ]
-    }
+    Event('foo').serialize[:sentences].should_not be_nil
+    Event('foo').every.serialize[:sentences][0][:clauses].should_not be_nil
+    Event('foo').every.day.serialize[:sentences][0][:clauses][0].should_not be_nil
   end
   
   it "should allowed several sentences to be chained with and" do
-    Event('foo').every(2).days.in.month(:jan).and.every(3).days.in.month(:feb).serialize.should == {
-      :title => 'foo', :sentences => [
-        {:clauses => [
-          {:interval => 2, :unit => Day, :type => :range, :from => nil, :to => nil, :limit => nil},
-          {:unit => Month, :type => :list, :list => [:jan]}
-        ]},
-        {:clauses => [
-          {:interval => 3, :unit => Day, :type => :range, :from => nil, :to => nil, :limit => nil},
-          {:unit => Month, :type => :list, :list => [:feb]}
-        ]}
-      ]
-    }
+    s = Event('foo').every(2).days.in.month(:jan).and.every(3).days.in.month(:feb).serialize
+    s[:sentences].nitems.should == 2
+    s[:sentences][0][:clauses].nitems.should == 2
+  end
+  
+  it "should prevent intervals being set on list clauses" do
+    lambda { Event('foo').every(2).days(1, 3, 5) }.should raise_error(DSL::ExpressionError)
+  end
+  
+  it "should support except and include" do
+    c = Event('Sam sneezes').except.include.every(3).days.except.days(:wed).serialize[:sentences][0][:clauses]
+    c[0][:exclusion].should == false
+    c[1][:exclusion].should == true
   end
   
 end

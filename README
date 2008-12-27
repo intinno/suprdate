@@ -10,24 +10,24 @@
     git clone git://github.com/olliesaunders/suprdate.git
     cd suprdate
     bin/run_specs # check to see that it's working (requires rspec)
-    bin/irb # this script requires and includes the library; just start playing!
+    bin/irb # this script requires and includes the library, and starts an interactive ruby session
     
   === Inclusion
   
     require PATH_TO_SUPRDATE + '/lib/suprdate'
-    include Suprdate # recommended within the scope you want to use Suprdate
+    include Suprdate
     
   === Features
   
     Suprdate consists of two layers. 
     
-      1. Object that represent dates (Year, Month and Day etc.) These are used for the purposes of
+      1. Objects that represent dates (Year, Month and Day etc.) These are used for the purposes of
          traversal, iteration and arithmetic.
-      2. Event occurrence DSL for expressing calendar event rules. This sits on top of the first 
-         layer and provides you with objects from the first layer as a result.
+      2. An event occurrence DSL capable of expressing calendar event rules. This layer sits on top 
+         of the first and provides you with objects from the first layer as a result.
     
-    I'd like to first begin by going through the features of the second layer, DSL, but it doesn't 
-    yet exist (see TODO for how it might work when it's done) so we'll start with the first layer:
+    I would like to first begin by going through the features of the second layer (the DSL) but 
+    unforuntately it is not yet completed so I shall, instead, begin with the first layer:
     
     >> y = Year(2008) # => 2008
     >> y.leap? # => true
@@ -59,8 +59,8 @@
     >> y.month # => 2009-01
     >> d = y.day # => 2009-01-01
     >> d = Day(2009, 1, 1) # 2009-01-01
-    >> d.until(a.month + 1) # => 31 # num days until the next month
-    >> d.since(a.month - 2) # => 61 # num days since two months ago
+    >> d.until(d.month + 1) # => 31 # num days until the next month
+    >> d.since(d.month - 2) # => 61 # num days since two months ago
     >> d.of_week_as_s # => "Thursday"
     >> d.of_week_as_sym # => :thu
     >> d.of_week_as_i  # => 5
@@ -85,7 +85,7 @@
     same type as one the left so that they can be enumerated. This means the type you use on the
     left of the range will determine the type of the output.
     
-    (Year(2005)..Inf) creates a range that has no end. If you call #to_a on it ruby will go into an
+    (Year(2005)..Infinity) creates a range that has no end. If you call #to_a on it ruby will go into an
     infinite loop. Call each on this to iterate until you wish to break.
     
     Currently there are no week objects. It's on the TODO.
@@ -97,15 +97,15 @@
     >> every(:third, Year(2008).months)
     => [2008-01, 2008-04, 2008-07, 2008-10]
     
-    It'll accept a block too if you're that way inclined. If a block is passed it returns the 
-    original list unaltered.
+    It will accept a block too if you are that way inclined. If a block is given #every will
+    return the original list unaltered.
     
-  === Meta Programming
+  === Meta-Programming
   
     Currently there is a single meta-programming technique in use in Suprdate
     
-    The methods #Year, #Month and #Day and #Today are created dynamically at require time and 
-    actually each represent calls to DEFAULT_BUILDER: 
+    The methods beginning with an uppercase such as #Year, #Month and #Day and #Today are created 
+    dynamically at require time and actually each represent calls to DEFAULT_BUILDER: 
     
     >> Year(2008) == DEFAULT_BUILDER.year(2008) # => true
     >> Year(2008) == Builder.new.year(2008) # => true
