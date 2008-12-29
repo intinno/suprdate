@@ -2,6 +2,7 @@ module Suprdate
   
   class Day < Unit
   
+    require 'date'
     attr_reader :month
 
     def initialize(month, value)
@@ -82,11 +83,9 @@ module Suprdate
     
     alias :of_month :value
   
-    private
-    
-    def parts() [year.value, @month.value, value] end
+    def parts() [year.value, @month.value, value] end # :nodoc:
             
-    def new_from_date(date)
+    def new_from_date(date) # :nodoc:
       new(@month.new(year.new(date.year), date.month), date.day)
     end
   
