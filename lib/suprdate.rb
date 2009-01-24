@@ -102,10 +102,12 @@ module Suprdate
   UNIT_CLASSES = [Year, Month, Day]
   
   # Cheeky helper
-  def UNIT_CLASSES.fetch_index(i)
-    index = index(i)
-    return index if index
-    raise IndexError("#{i} does not exist within UNIT_CLASSES")
+  def UNIT_CLASSES.fetch_index(value)
+    #puts caller
+    #puts
+    i = self.index(value)
+    return i if i
+    raise IndexError.new("#{value} does not exist within UNIT_CLASSES")
   end
 
   WEEKDAYS_SYM_TO_I = {

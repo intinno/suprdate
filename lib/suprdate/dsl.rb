@@ -94,9 +94,7 @@ module Suprdate
         {:title => @title, :sentences => @sentences.map { |sentence| sentence.to_hash } }
       end
       
-      def and
-        self
-      end
+      def and() self end
       
       alias :serialize :to_hash
             
