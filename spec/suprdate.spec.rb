@@ -134,6 +134,23 @@ describe 'all unit classes' do
     end
   end
   
+  it "should have a leap? method" do
+    UNIT_CLASSES.each { |c| c.public_method_defined?(:leap?).should == true }
+  end
+  
+  it "should know its significance related to each other unit" do
+    (Year <=> Year).should == 0
+    (Year <=> Month).should == 1
+    (Year <=> Day).should == 1
+    (Month <=> Year).should == -1
+    (Month <=> Month).should == 0
+    (Month <=> Day).should == 1
+    (Day <=> Year).should == 1
+    (Day <=> Month).should == 1
+    (Day <=> Day).should == 0
+    raise 'Missing weeks' if defined? Week
+  end
+  
   include BeAListOfIdenticialObjects
   
   it "should have polymorphic interfaces" do
@@ -146,6 +163,18 @@ describe 'all unit classes' do
       u.year.class.should == Year
       u.days[0].class.should == Day
     end
+  end
+
+end
+
+describe UNIT_CLASSES, '#fetch_index' do
+
+  it "should raise if attempting to get the index of something that doesn't exist" do
+    lambda { UNIT_CLASSES.fetch_index('monkey') }.should raise_error(IndexError)
+  end
+  
+  it "should return the index without raising for something that does exist" do
+    lambda { UNIT_CLASSES.fetch_index(Year).should == 0 }.should_not raise_error
   end
 
 end

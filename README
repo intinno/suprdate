@@ -110,6 +110,6 @@
     >> Year(2008) == DEFAULT_BUILDER.year(2008) # => true
     >> Year(2008) == Builder.new.year(2008) # => true
     
-    This is done to make the existence of a builder completely transparent to you, the user.
+    This is done to make the existence of a builder completely transparent to the developer.
     At present I can see no reason to interact with the builder, define you own builders or
     worry about this for any reason.

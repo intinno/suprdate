@@ -1,6 +1,6 @@
 def mock_sentence
   rval = mock DSL::Sentence
-  rval.stub!(:interval => DSL::NO_INTERVAL, :unit => nil, :every => rval, :exclusion => DSL::DEFAULT_EXCLUSION_STATE)
+  rval.stub!(:interval => DSL::CONTINUOUS, :unit => nil, :every => rval, :exclusion => DSL::DEFAULT_EXCLUSION_STATE)
   rval
 end
 
@@ -83,7 +83,7 @@ describe 'abstract clause', :shared => true do
 
   before(:each) do
     @sentence = mock_sentence
-    @clause_class = DSL::AbstractClause
+    @clause_class = DSL::Clause
   end
   
   it "should copy the current unit from the @sentence that created it" do
@@ -129,28 +129,56 @@ describe DSL::ListClause do
 
 end
 
-describe 'paragraphs, sentences and clauses integrated' do
+describe DSL, 'elements integrated' do
 
   it "should traverses up from clause, through sentence, to paragraph and then back down using to_hash" do
-    Event('foo').serialize[:sentences].should_not be_nil
-    Event('foo').every.serialize[:sentences][0][:clauses].should_not be_nil
-    Event('foo').every.day.serialize[:sentences][0][:clauses][0].should_not be_nil
+    Event().serialize[:sentences].should_not be_nil
+    Event().every.serialize[:sentences][0][:clauses].should_not be_nil
+    Event().every.day.serialize[:sentences][0][:clauses][0].should_not be_nil
   end
   
   it "should allowed several sentences to be chained with and" do
-    s = Event('foo').every(2).days.in.month(:jan).and.every(3).days.in.month(:feb).serialize
+    s = Event().every(2).days.in.month(:jan).and.every(3).days.in.month(:feb).serialize
     s[:sentences].nitems.should == 2
     s[:sentences][0][:clauses].nitems.should == 2
   end
   
   it "should prevent intervals being set on list clauses" do
-    lambda { Event('foo').every(2).days(1, 3, 5) }.should raise_error(DSL::ExpressionError)
+    lambda { Event().every(2).days(1, 3, 5) }.should raise_error(DSL::ExpressionError)
   end
   
   it "should support except and include" do
-    c = Event('Sam sneezes').except.include.every(3).days.except.days(:wed).serialize[:sentences][0][:clauses]
+    c = Event().except.include.every(3).days.except.days(:wed).serialize[:sentences][0][:clauses]
     c[0][:exclusion].should == false
     c[1][:exclusion].should == true
+  end
+  
+  def mock_english_serializer_factory(expected)
+    (es = mock('eng serializer')).should_receive(:convert).with(an_instance_of(Hash)).and_return(expected)
+    (esf = mock('eng serializer factory')).should_receive(:new).with(no_args).and_return(es)
+    esf
+  end
+  
+  it "should provide to_english which uses SerializationToEnglish#description" do
+    {:paragraph => Event().paragraph, :sentence  => Event(), 
+     :clause    => Event().every.day}.values.each do |dsl_element|
+      dsl_element.english_serializer_factory = mock_english_serializer_factory(expected = rand_int)
+      dsl_element.to_english.should == expected
+    end
+  end
+  
+  it "should not permit units to be contained within the same unit" do
+    lambda { Event().every.day.in.day }.should raise_error(DSL::ExpressionError)
+    lambda { Event().every.month.in.month }.should raise_error(DSL::ExpressionError)
+    lambda { Event().every.year.in.year }.should raise_error(DSL::ExpressionError)
+    raise 'Missing weeks' if defined? Week
+  end
+  
+  it "should not permit units to be contained within the smaller unit" do
+    lambda { Event().every.month.in.day }.should raise_error(DSL::ExpressionError)
+    lambda { Event().every.year.in.day }.should raise_error(DSL::ExpressionError)
+    lambda { Event().every.year.in.month }.should raise_error(DSL::ExpressionError)
+    raise 'Missing weeks' if defined? Week
   end
   
 end
@@ -198,6 +226,48 @@ describe 'chain_attr_accessor' do
     args = Array.new(rand_between(1..5)) { rand }
     foo(*args).should == self
     @foo.should == args
+  end
+
+end
+
+describe DSL::SerializationToEnglish, 'integrated with the DSL serialization' do
+
+  it "should serialize totally empty paragraphs" do
+    Event('Foo').to_english.should == 'Foo never happens'
+  end
+  
+  it "should serialize unlimited ranges" do
+    Event('Foo').every.day.to_english.should == 'Foo happens every day'
+    Event('Foo').every.month.to_english.should == 'Foo happens every month'
+    Event('Foo').every.year.to_english.should == 'Foo happens every year'
+  end
+  
+  it "should serialize intervalled ranges" do
+    Event('Foo').every(2).days.to_english.should == 'Foo happens every 2 days'
+    Event('Foo').every(4).day.to_english.should == 'Foo happens every 4 days'
+    Event('Foo').every(9).month.to_english.should == 'Foo happens every 9 months'
+  end
+
+end
+
+describe DSL::SerializationClauseHelper do
+
+  def subject(hash)
+    hash.extend(DSL::SerializationClauseHelper)
+    hash
+  end
+  
+  it "should have interval when [:interval] is greater than 1" do
+    subject(:interval => 1).has_interval.should == false
+    subject(:interval => 2).has_interval.should == true
+  end
+  
+  it "should provide a unit name in plural or singular depending on interval also" do
+    (mock = mock('unit')).should_receive(:name_singular).once.and_return(expected = rand_int)
+    subject(:interval => 1, :unit => mock).unit_name == expected
+    
+    (mock = mock('unit')).should_receive(:name_plural).once.and_return(expected = rand_int)
+    subject(:interval => 2, :unit => mock).unit_name == expected
   end
 
 end

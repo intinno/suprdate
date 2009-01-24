@@ -53,16 +53,16 @@ module Suprdate
     # Next successive day.
     def succ() self + 1 end
       
-    # Increment by any number of days. A fresh day object is returned.
+    # Return a new day incremented by an integer.
     def +(increase) new_from_date(date + increase) end
       
-    # Decrement by any number of days. A fresh day object is returned.
+    # Return a new day decremented by an integer.
     def -(decrease) new_from_date(date - decrease) end
       
-    # The number of days since another day.
+    # The number of days since parameter#day.
     def since(operand) (date - operand.day.date).numerator end
       
-    # The number of days until another day.
+    # The number of days until parameter#day.
     def until(operand) (operand.day.date - date).numerator end
       
     def <=>(operand) 

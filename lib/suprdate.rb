@@ -4,7 +4,7 @@ module Suprdate
   LIB_DIR = File.join(BASE_DIR,"lib")
   
   # Methods and classes used in the internals of Suprdate not expected to be of concern to the
-  # casual library user.
+  # casual developer.
   module Utility # :nodoc: all
     
     def self.disarray(array) 
@@ -100,6 +100,13 @@ require Suprdate::LIB_DIR + '/suprdate/builder'
 module Suprdate
     
   UNIT_CLASSES = [Year, Month, Day]
+  
+  # Cheeky helper
+  def UNIT_CLASSES.fetch_index(i)
+    index = index(i)
+    return index if index
+    raise IndexError("#{i} does not exist within UNIT_CLASSES")
+  end
 
   WEEKDAYS_SYM_TO_I = {
     :mon => 1, :tue => 2, :wed => 3, :thu => 4, 

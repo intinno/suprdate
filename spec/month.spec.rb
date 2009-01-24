@@ -72,6 +72,22 @@ describe Month, 'provides individual days' do
   
 end
 
+describe Month, 'leap?' do
+
+  it "should not delegate to year if not Febuary" do
+    month = Month.new(y = mock('year'), 1)
+    y.should_not_receive(:leap?)
+    month.leap?.should == false
+  end
+  
+  it "should delegate to year if Febuary" do
+    month = Month.new(y = mock('year'), 2)
+    y.should_receive(:leap?).and_return(expected = rand_int)
+    month.leap?.should == expected
+  end
+
+end
+
 describe Month, 'math and logic' do
 
   it "should be comparable" do
