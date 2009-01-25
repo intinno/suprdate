@@ -53,7 +53,7 @@ describe Suprdate::UNITS do
 
 end
 
-describe Suprdate, :disarray do
+describe Utility, :disarray do
 
   it "should return unaltered array if 2 or more elements" do
     Utility::disarray(array = Array.new(2)).should == array
@@ -64,6 +64,26 @@ describe Suprdate, :disarray do
   it "should return first element of a single element array" do
     Utility::disarray([:foo]).should == :foo
     Utility::disarray([80081355]).should == 80081355
+  end
+
+end
+
+describe Utility, :english_list do
+
+  it "should return string forms of single items" do
+    Utility::english_list([1]).should == '1'
+    (mock_item = mock('item')).should_receive(:to_s).and_return(expected = rand_int.to_s)
+    Utility::english_list([mock_item]).should == expected
+  end
+  
+  it "should return two-item lists with and in the middle" do
+    Utility::english_list([1, 2]).should == '1 and 2'
+    Utility::english_list([:Fox, :Hounds]).should == 'Fox and Hounds'
+  end
+  
+  it "should use commas in lists of any length greater than do" do
+    Utility::english_list([1, 2, 3]).should == '1, 2, and 3'
+    Utility::english_list(['Loud', 'scary', 'extremely flatulent']).should == 'Loud, scary, and extremely flatulent'
   end
 
 end

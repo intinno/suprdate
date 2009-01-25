@@ -29,19 +29,26 @@ module Suprdate
 
       # Perform the conversion, returns a string.
       def convert(serialization)
-        words = [serialization[:title]]
+        @words = [serialization[:title]]
         serialization[:sentences].each do |sentence|
-          next words << 'never happens' if sentence[:including].empty?
+          next @words << 'never happens' if sentence[:including].empty?
           sentence[:including].each do |clause|
             clause.extend(SerializationClauseHelper)
-            if clause[:type] == :range
-              words << 'happens every'
-              words << clause[:interval] if clause.has_interval
-            end
-            words << clause.unit_name
+            each_clause(clause)
           end
         end
-        words.map { |x| x.to_s }.join(' ')
+        @words.map { |x| x.to_s }.join(' ')
+      end
+      
+      def each_clause(clause)
+        if clause[:type] == :range
+          @words << 'happens every'
+          @words << clause[:interval] if clause.has_interval
+          @words << clause.unit_name
+        else
+          @words << 'in'
+          @words << clause.english_list
+        end
       end
       
     end
@@ -51,6 +58,22 @@ module Suprdate
       def unit_name() self[:unit].send(has_interval ? :name_plural : :name_singular) end
       def has_interval() self[:interval] != CONTINUOUS end
         
+      def english_list()
+        raise RuntimeError.new('No list to speak of') if self[:type] != :list 
+        if self[:unit] == Month
+          months_as_strings(self[:list])
+        else
+          self[:list]
+        end
+      end
+      
+      def months_as_strings(months)
+        months.map do |sym_or_i|
+          MONTHS_AS_STR[MONTHS_SYM_TO_I[sym_or_i] || sym_or_i] or 
+            raise ExpressionError.new("Unknown month specifier: #{sym_or_i}")
+        end
+      end
+      
     end
 
     # Raised when you're trying to do weird things that aren't possible with the DSL
@@ -70,8 +93,8 @@ module Suprdate
     
     class ExpressionFragment < ExpressionError
       
-      def self.between(sub_unit, super_unit)
-        new("#{sub_unit.name_plural} in which #{super_unit.name_singular.downcase}?")
+      def self.between(lesser_unit, greater_unit)
+        new("#{lesser_unit.name_plural} in which #{greater_unit.name_singular.downcase}?")
       end
       
     end
@@ -171,6 +194,8 @@ module Suprdate
       # Serialized representation of the data collected. 
       # Call #serialize to get the whole thing.
       def to_hash
+        assert_non_fragment(@including)
+        assert_non_fragment(@excluding)
         {:including => @including.map { |clause| clause.to_hash },
          :excluding => @excluding.map { |clause| clause.to_hash }}
       end
@@ -193,6 +218,15 @@ module Suprdate
         return true if @clause_collection.empty?
         if @clause_collection.last.unit >= incoming
           raise ExpressionError.endianness(@clause_collection.last.unit, incoming) 
+        end
+      end
+      
+      def assert_non_fragment(clauses)
+        if clauses.length > 1
+          last = clauses.last
+          if last.respond_to?(:from) && last.from.nil?
+            raise ExpressionFragment.between(clauses[-2].unit, last.unit)
+          end
         end
       end
       

@@ -11,6 +11,18 @@ module Suprdate
       if array.size == 1 then array[0] else array end
     end
     
+    def self.english_list(items)
+      items = items.map { |x| x.to_s }
+      case items.length
+      when 1
+        items[0]
+      when 2
+        items.join(' and ')
+      else
+        items[0..-2].join(', ') + ', and ' + items.last
+      end
+    end
+    
     # Some inflection on the #name of constants.
     module CleanConstantName
     

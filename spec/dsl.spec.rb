@@ -180,10 +180,15 @@ describe DSL, 'elements integrated' do
   end
   
   it "should not permit incomplete things" do
-    lambda { Event().every.day.in.month }.should raise_error(DSL::ExpressionFragment)
-    lambda { Event().every.month.in.year }.should raise_error(DSL::ExpressionFragment)
-    lambda { Event().every.day.in.year }.should raise_error(DSL::ExpressionFragment)
-    lambda { Event().every.day.in.month(:jan).in.year }.should raise_error(DSL::ExpressionFragment)
+    lambda { Event().every.day.in.month.serialize }.should raise_error(DSL::ExpressionFragment)
+    lambda { Event().every.month.in.year.serialize }.should raise_error(DSL::ExpressionFragment)
+    lambda { Event().every.day.in.year.serialize }.should raise_error(DSL::ExpressionFragment)
+    lambda { Event().every.day.in.month(:jan).in.year.serialize }.should raise_error(DSL::ExpressionFragment)
+    # and again with except
+    lambda { Event().every.except.day.in.month.serialize }.should raise_error(DSL::ExpressionFragment)
+    lambda { Event().every.except.month.in.year.serialize }.should raise_error(DSL::ExpressionFragment)
+    lambda { Event().every.except.day.in.year.serialize }.should raise_error(DSL::ExpressionFragment)
+    lambda { Event().every.except.day.in.month(:jan).in.year.serialize }.should raise_error(DSL::ExpressionFragment)
   end
   
 end
@@ -254,10 +259,9 @@ describe DSL::SerializationToEnglish, 'integrated with the DSL serialization' do
   end
   
   it "should serialize multiple clauses" do
-    pending 'Once invalid serializations cannot occur'
-    Event('foo').every.day.in.month(:jan).to_english.should == 'Foo happens every day in January'
-    Event('foo').every(9).days.in.month(:jan).to_english.should == 'Foo happens every 9 days in January, starting from the 1st'
-    Event('foo').every(2).days.in.year(2000).to_english.should == 'Foo happens every 2 days in 2000, starting from January 1st'
+    Event('Foo').every.day.in.month(:jan).to_english.should == 'Foo happens every day in January'
+    Event('Foo').every(9).days.in.month(:jan).to_english.should == 'Foo happens every 9 days in January, starting from the 1st'
+    Event('Foo').every(2).days.in.year(2000).to_english.should == 'Foo happens every 2 days in 2000, starting from January 1st'
   end
 
 end
@@ -281,5 +285,12 @@ describe DSL::SerializationClauseHelper do
     (mock = mock('unit')).should_receive(:name_plural).once.and_return(expected = rand_int)
     subject(:interval => 2, :unit => mock).unit_name == expected
   end
-
+  
+  it "should convert months to strings and everything else leave alone" do
+    lambda { subject(:type => :range).english_list }.should raise_error(RuntimeError)
+    subject(:type => :list, :list => [2000], :unit => Year).english_list.should == [2000]
+    subject(:type => :list, :list => [:jan, 1, 3, :oct], :unit => Month).english_list.
+      should == ["January", "January", "March", "October"]
+  end
+  
 end
