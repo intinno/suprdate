@@ -16,15 +16,6 @@ module Suprdate
       super(v)
     end
     
-    class << self
-      
-      include Comparable
-      
-      def <=>(opperand)
-        UNIT_CLASSES.fetch_index(self) <=> UNIT_CLASSES.fetch_index(opperand)
-      end
-      
-    end
     
     protected :initialize # for + and -
     

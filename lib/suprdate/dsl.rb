@@ -31,8 +31,8 @@ module Suprdate
       def convert(serialization)
         words = [serialization[:title]]
         serialization[:sentences].each do |sentence|
-          next words << 'never happens' if sentence[:clauses].empty?
-          sentence[:clauses].each do |clause|
+          next words << 'never happens' if sentence[:including].empty?
+          sentence[:including].each do |clause|
             clause.extend(SerializationClauseHelper)
             if clause[:type] == :range
               words << 'happens every'
@@ -49,7 +49,7 @@ module Suprdate
     module SerializationClauseHelper
       
       def unit_name() self[:unit].send(has_interval ? :name_plural : :name_singular) end
-      def has_interval() self[:interval] > 1 end
+      def has_interval() self[:interval] != CONTINUOUS end
         
     end
 
@@ -67,9 +67,16 @@ module Suprdate
       end
       
     end
+    
+    class ExpressionFragment < ExpressionError
+      
+      def self.between(sub_unit, super_unit)
+        new("#{sub_unit.name_plural} in which #{super_unit.name_singular.downcase}?")
+      end
+      
+    end
         
     CONTINUOUS = 1 # Relates to intervals; More human way of saying something that happens every 1 day.
-    DEFAULT_EXCLUSION_STATE = false # as in: include.
         
     # Chains together one or more sentences and gives them a title.
     class Paragraph < Element
@@ -117,11 +124,19 @@ module Suprdate
       
     end
     
-    # Composed of a single unit (see Supradate::UNIT_CLASSES) that can then be qualified as a list
+    # Composed of a single unit (see Supradate::UNITS) that can then be qualified as a list
     # or a range using a repsective clause.
     class Sentence < Element
       
-      attr_reader :interval, :unit, :clauses, :exclusion
+      attr_reader :interval, :unit, 
+        # Clauses defining date regions to be included.
+        :including, 
+        # Clauses defining date regions to be excluded.
+        :excluding, 
+        # Either the include or exclude collection depending on context
+        # context is set with #include and #except.
+        :clause_collection
+        
       attr_accessor :paragraph, :clause_factory
       extend Forwardable
       def_delegators :@paragraph, :serialize, :and
@@ -129,9 +144,10 @@ module Suprdate
       def initialize(paragraph)
         @paragraph = paragraph
         @interval = CONTINUOUS
-        @clauses = []
+        @including = []
+        @excluding = []
+        @clause_collection = @including # Include by default.
         @clause_factory = ClauseFactory.new
-        @exclusion = DEFAULT_EXCLUSION_STATE
         super()
       end
       
@@ -142,11 +158,11 @@ module Suprdate
       
       # Creates a method of the plural and singular of each unit for designating a unit
       # and returns a clause.
-      UNIT_CLASSES.each do |klass|
+      UNITS.each do |klass|
         define_method(klass.name_singular) do |*list|
           assert_correct_endianness(klass)
           @unit = klass
-          @clauses << clause = @clause_factory.make(self, list)
+          @clause_collection << clause = @clause_factory.make(self, list)
           clause
         end
         alias_method klass.name_plural, klass.name_singular
@@ -155,26 +171,29 @@ module Suprdate
       # Serialized representation of the data collected. 
       # Call #serialize to get the whole thing.
       def to_hash
-        {:clauses => @clauses.map { |clause| clause.to_hash } }
-      end
-      
-      # Raises if the current unit is larger than the incoming one (little endian)
-      # i.e. Days then weeks then months then years -- with any number of intermediates omitted. 
-      def assert_correct_endianness(incoming)
-        return true if @clauses.empty?
-        if @clauses.last.unit >= incoming
-          raise ExpressionError.endianness(@clauses.last.unit, incoming) 
-        end
+        {:including => @including.map { |clause| clause.to_hash },
+         :excluding => @excluding.map { |clause| clause.to_hash }}
       end
       
       def except
-        @exclusion = true
+        @clause_collection = @excluding
         every
       end
       
       def include
-        @exclusion = false
+        @clause_collection = @including
         every
+      end
+      
+      protected
+      
+      # Raises if the current unit is larger than the incoming one (little endian)
+      # i.e. Days then weeks then months then years -- with any number of intermediates omitted. 
+      def assert_correct_endianness(incoming)
+        return true if @clause_collection.empty?
+        if @clause_collection.last.unit >= incoming
+          raise ExpressionError.endianness(@clause_collection.last.unit, incoming) 
+        end
       end
       
     end
@@ -207,21 +226,20 @@ module Suprdate
     
     class Clause < Element
       
-      attr_accessor :sentence, :unit, :exclusion
+      attr_accessor :sentence, :unit
       extend Forwardable
       def_delegators :@sentence, :every, :serialize, :and, :except, :include
       
       def initialize(sentence)
         @sentence = sentence
         @unit = sentence.unit
-        @exclusion = sentence.exclusion
         super()
       end
       
       # Serialized representation of the data collected. 
       # Call #serialize to get the whole thing.
       def to_hash
-        {:type => :abstract, :unit => @unit, :exclusion => @exclusion}
+        {:type => :abstract, :unit => @unit}
       end
       
       alias :in :every

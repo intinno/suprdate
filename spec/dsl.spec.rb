@@ -1,6 +1,6 @@
 def mock_sentence
   rval = mock DSL::Sentence
-  rval.stub!(:interval => DSL::CONTINUOUS, :unit => nil, :every => rval, :exclusion => DSL::DEFAULT_EXCLUSION_STATE)
+  rval.stub!(:interval => DSL::CONTINUOUS, :unit => nil, :every => rval)
   rval
 end
 
@@ -31,7 +31,7 @@ end
 
 describe DSL::Sentence do
 
-  UNITS = UNIT_CLASSES.map { |c| [c.name_singular, c.name_plural] }.flatten
+  UNITS_AS_SYM = UNITS.map { |c| [c.name_singular, c.name_plural] }.flatten
   
   before(:each) do
     reset
@@ -43,7 +43,7 @@ describe DSL::Sentence do
   end
 
   def with_units
-    UNITS.each do |method|
+    UNITS_AS_SYM.each do |method|
       reset
       yield method
     end
@@ -64,16 +64,14 @@ describe DSL::Sentence do
     end
   end
   
-  it "should have a 'to_hash' form that traverses clauses" do
-    @sentence.clauses << a = mock('clause a')
-    @sentence.clauses << b = mock('clause b')
-    @sentence.clauses << c = mock('clause c')
-    rvals = []
-    [a,b,c].each do |clause|
-      rvals << (rval = rand_int)
-      clause.should_receive(:to_hash).once.and_return(rval)
-    end
-    @sentence.to_hash[:clauses].should == rvals
+  it "should have a 'to_hash' form that traverses including and excluding clauses" do
+    @sentence.including << a = mock('clause a')
+    @sentence.excluding << b = mock('clause b')
+    a.should_receive(:to_hash).once.and_return(expected_a = rand_int)
+    b.should_receive(:to_hash).once.and_return(expected_b = rand_int)
+    hash = @sentence.to_hash
+    hash[:including].should == [expected_a]
+    hash[:excluding].should == [expected_b]
   end
   
 end
@@ -89,11 +87,6 @@ describe 'abstract clause', :shared => true do
   it "should copy the current unit from the @sentence that created it" do
     @sentence.should_receive(:unit).once.and_return(expected = rand_int)
     @clause_class.new(@sentence).unit.should == expected
-  end
-  
-  it "should copy the current exclusion from the @sentence that created it" do
-    @sentence.should_receive(:exclusion).once.and_return(expected = rand_int)
-    @clause_class.new(@sentence).exclusion.should == expected
   end
   
   it "should return the @sentence with 'in'" do
@@ -133,14 +126,14 @@ describe DSL, 'elements integrated' do
 
   it "should traverses up from clause, through sentence, to paragraph and then back down using to_hash" do
     Event().serialize[:sentences].should_not be_nil
-    Event().every.serialize[:sentences][0][:clauses].should_not be_nil
-    Event().every.day.serialize[:sentences][0][:clauses][0].should_not be_nil
+    Event().every.serialize[:sentences][0][:including].should_not be_nil
+    Event().every.day.serialize[:sentences][0][:including][0].should_not be_nil
   end
   
   it "should allowed several sentences to be chained with and" do
     s = Event().every(2).days.in.month(:jan).and.every(3).days.in.month(:feb).serialize
     s[:sentences].nitems.should == 2
-    s[:sentences][0][:clauses].nitems.should == 2
+    s[:sentences][0][:including].nitems.should == 2
   end
   
   it "should prevent intervals being set on list clauses" do
@@ -148,10 +141,13 @@ describe DSL, 'elements integrated' do
   end
   
   it "should support except and include" do
-    pending 'broken'
-    c = Event().except.include.every(3).days.except.days(:wed).serialize[:sentences][0][:clauses]
-    c[0][:exclusion].should == false
-    c[1][:exclusion].should == true
+    sen = Event().every
+    serialization = sen.serialize[:sentences][0]
+    serialization[:including].nitems.should == 0
+    serialization[:excluding].nitems.should == 0
+    serialization = sen.except.include.every(3).days.except.days(:wed).serialize[:sentences][0]
+    serialization[:including].nitems.should == 1
+    serialization[:excluding].nitems.should == 1
   end
   
   def mock_english_serializer_factory(expected)
@@ -161,7 +157,8 @@ describe DSL, 'elements integrated' do
   end
   
   it "should provide to_english which uses SerializationToEnglish#description" do
-    {:paragraph => Event().paragraph, :sentence  => Event(), 
+    {:paragraph => Event().paragraph, 
+     :sentence  => Event(), 
      :clause    => Event().every.day}.values.each do |dsl_element|
       dsl_element.english_serializer_factory = mock_english_serializer_factory(expected = rand_int)
       dsl_element.to_english.should == expected
@@ -169,19 +166,24 @@ describe DSL, 'elements integrated' do
   end
   
   it "should not permit units to be contained within the same unit" do
-    pending 'not implemented'
     lambda { Event().every.day.in.day }.should raise_error(DSL::ExpressionError)
     lambda { Event().every.month.in.month }.should raise_error(DSL::ExpressionError)
     lambda { Event().every.year.in.year }.should raise_error(DSL::ExpressionError)
-    raise 'Missing weeks' if defined? Week
+    pending 'Missing weeks' if defined? Week
   end
   
   it "should not permit units to be contained within the smaller unit" do
-    pending 'not implemented'
     lambda { Event().every.month.in.day }.should raise_error(DSL::ExpressionError)
     lambda { Event().every.year.in.day }.should raise_error(DSL::ExpressionError)
     lambda { Event().every.year.in.month }.should raise_error(DSL::ExpressionError)
-    raise 'Missing weeks' if defined? Week
+    pending 'Missing weeks' if defined? Week
+  end
+  
+  it "should not permit incomplete things" do
+    lambda { Event().every.day.in.month }.should raise_error(DSL::ExpressionFragment)
+    lambda { Event().every.month.in.year }.should raise_error(DSL::ExpressionFragment)
+    lambda { Event().every.day.in.year }.should raise_error(DSL::ExpressionFragment)
+    lambda { Event().every.day.in.month(:jan).in.year }.should raise_error(DSL::ExpressionFragment)
   end
   
 end
@@ -249,6 +251,13 @@ describe DSL::SerializationToEnglish, 'integrated with the DSL serialization' do
     Event('Foo').every(2).days.to_english.should == 'Foo happens every 2 days'
     Event('Foo').every(4).day.to_english.should == 'Foo happens every 4 days'
     Event('Foo').every(9).month.to_english.should == 'Foo happens every 9 months'
+  end
+  
+  it "should serialize multiple clauses" do
+    pending 'Once invalid serializations cannot occur'
+    Event('foo').every.day.in.month(:jan).to_english.should == 'Foo happens every day in January'
+    Event('foo').every(9).days.in.month(:jan).to_english.should == 'Foo happens every 9 days in January, starting from the 1st'
+    Event('foo').every(2).days.in.year(2000).to_english.should == 'Foo happens every 2 days in 2000, starting from January 1st'
   end
 
 end

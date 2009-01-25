@@ -87,6 +87,27 @@ module Suprdate
     
     # Duplicates this object and reinitialize it
     def new(*args) dup.initialize(*args) end
+      
+    # The significance of this unit, in the mathematical sense. The significance 
+    # of a year will be a greater integer than that of a day for instance. The
+    # order of elements in UNITs is used to determine this.
+    def self.significance
+      # I wanted to do this:
+      #   UNITS.length - UNITS.index(self)
+      # but it results in an illegal instruction for MRI
+      raise 'Update me' if UNITS.length > 3
+      return 1 if object_id == Day.object_id
+      return 2 if object_id == Month.object_id
+      3
+    end
+      
+    # Implements Year > Day # => true etc.
+    def self.<=>(opperand)
+      return nil unless opperand.respond_to?(:significance)
+      significance <=> opperand.significance
+    end
+    
+    extend Comparable
     
   end
   
@@ -99,17 +120,9 @@ require Suprdate::LIB_DIR + '/suprdate/builder'
 
 module Suprdate
     
-  UNIT_CLASSES = [Year, Month, Day]
+  # All date units defined from most to least significant.
+  UNITS = [Year, Month, Day]
   
-  # Cheeky helper
-  def UNIT_CLASSES.fetch_index(value)
-    #puts caller
-    #puts
-    i = self.index(value)
-    return i if i
-    raise IndexError.new("#{value} does not exist within UNIT_CLASSES")
-  end
-
   WEEKDAYS_SYM_TO_I = {
     :mon => 1, :tue => 2, :wed => 3, :thu => 4, 
     :fri => 5, :sat => 6, :sun => 7

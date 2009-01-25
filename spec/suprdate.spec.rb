@@ -21,9 +21,9 @@ describe Suprdate, :every do
   
 end
 
-module BeAListOfIdenticialObjects
+module BeAListOfIdenticalInstances
   
-  def be_a_list_of_identicial_objects(expected)
+  def be_a_list_of_identical_instances(expected)
     simple_matcher('be a list of the same objects') do |given, matcher|
       matcher.failure_message = "expected #{given.inspect} to be the same as #{expected.inspect}"
       matcher.negative_failure_message = 
@@ -37,9 +37,9 @@ module BeAListOfIdenticialObjects
     
 end
 
-describe Suprdate::UNIT_CLASSES do
+describe Suprdate::UNITS do
 
-  include BeAListOfIdenticialObjects
+  include BeAListOfIdenticalInstances
 
   it "should contain all the units" do
     units = []
@@ -48,7 +48,7 @@ describe Suprdate::UNIT_CLASSES do
       next unless const.respond_to?(:ancestors)
       const.ancestors[1..-1].find { |x| units << const if x == Unit }
     end
-    UNIT_CLASSES.should be_a_list_of_identicial_objects(units)
+    UNITS.should be_a_list_of_identical_instances(units)
   end
 
 end
@@ -127,7 +127,7 @@ end
 describe 'all unit classes' do
 
   it "should have CleanConstantName included" do
-    UNIT_CLASSES.each do |klass|
+    UNITS.each do |klass|
       class << klass
         ancestors
       end.include?(Utility::CleanConstantName).should == true
@@ -135,47 +135,37 @@ describe 'all unit classes' do
   end
   
   it "should have a leap? method" do
-    UNIT_CLASSES.each { |c| c.public_method_defined?(:leap?).should == true }
+    UNITS.each { |c| c.public_method_defined?(:leap?).should == true }
   end
   
   it "should know its significance related to each other unit" do
-    pending 'incomplete'
     (Year <=> Year).should == 0
     (Year <=> Month).should == 1
     (Year <=> Day).should == 1
     (Month <=> Year).should == -1
     (Month <=> Month).should == 0
     (Month <=> Day).should == 1
-    (Day <=> Year).should == 1
-    (Day <=> Month).should == 1
+    (Day <=> Year).should == -1
+    (Day <=> Month).should == -1
     (Day <=> Day).should == 0
-    raise 'Missing weeks' if defined? Week
+    (Year > Month).should == true
+    (Year > Year).should == false
+    (Year <=> Array).should == nil
+    pending 'Missing weeks' if defined? Week
   end
   
-  include BeAListOfIdenticialObjects
+  include BeAListOfIdenticalInstances
   
   it "should have polymorphic interfaces" do
     units = [y(2000), m(2000, 1), d(2000, 1, 1)]
     # to make sure these really are all the units.
-    units.map { |i| i.class }.should be_a_list_of_identicial_objects(UNIT_CLASSES)
+    units.map { |i| i.class }.should be_a_list_of_identical_instances(UNITS)
     units.each do |u|
       u.day.class.should == Day
       u.month.class.should == Month
       u.year.class.should == Year
       u.days[0].class.should == Day
     end
-  end
-
-end
-
-describe UNIT_CLASSES, '#fetch_index' do
-
-  it "should raise if attempting to get the index of something that doesn't exist" do
-    lambda { UNIT_CLASSES.fetch_index('monkey') }.should raise_error(IndexError)
-  end
-  
-  it "should return the index without raising for something that does exist" do
-    lambda { UNIT_CLASSES.index(Year).should == 0 }.should_not raise_error
   end
 
 end
