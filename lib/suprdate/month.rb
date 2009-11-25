@@ -5,7 +5,7 @@ module Suprdate
     attr_accessor :day_factory
     attr_reader :year
   
-    STRFTIME_STR = '%Y-%m'
+    STRFTIME_STR = '%B, %Y'
 
     def initialize(year, value)
       @year = year
