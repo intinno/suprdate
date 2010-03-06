@@ -6,7 +6,7 @@ class WeekDefinition
   def use!
     DEFAULT_BUILDER.week_definition = self
   end
-  
+
 end
 
 # singleton instances
@@ -16,13 +16,13 @@ end
   UK_WEEK
 
 class Builder
-  
+
   attr_accessor :week_definition
-  
+
 end
 
 class Year
-  
+
   def week(Integer) # Week
   def weeks # [Week]
 
@@ -51,7 +51,7 @@ class Week
 end
 
 class Day
-  
+
   def week
 
 end

@@ -97,8 +97,8 @@ Meta-Programming
 
 Currently there is a single meta-programming technique in use in Suprdate
 
-The methods beginning with an uppercase such as `Year`, `Month` and `Day` and `Today` are created 
-dynamically at require time and actually each represent calls to `DEFAULT_BUILDER`: 
+The methods beginning with an uppercase such as `Year`, `Month` and `Day` and `Today` are created
+dynamically at require time and actually each represent calls to `DEFAULT_BUILDER`:
 
 	>> Year(2008) == DEFAULT_BUILDER.year(2008) # => true
 	>> Year(2008) == Builder.new.year(2008) # => true

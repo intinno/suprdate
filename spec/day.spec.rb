@@ -6,7 +6,7 @@ describe Day, 'creation' do
     d(2000, 2, 3).to_s.should == '2000-02-03'
     d(1999, 3, 4).to_s.should == '1999-03-04'
   end
-  
+
   it "should prevent the creation of impossible days" do
     lambda { d(2000, 1, 40) }.should raise_error(DateConstructionError)
     lambda { d(2000, 2, 30) }.should raise_error(DateConstructionError)
@@ -22,7 +22,7 @@ describe Day, 'readers' do
     d(2000, 1, 5).of_year.should == 5
     d(2000, 2, 2).of_year.should == 33
   end
-  
+
   it "should give you the day of the week" do
     d(2008, 11, 9).of_week_as_s.should == "Sunday"
     d(2008, 11, 29).of_week_as_sym.should == :sat
@@ -30,7 +30,7 @@ describe Day, 'readers' do
     d(2008, 11, 28).of_week_as_i.should == 6
     d(2008, 12, 1).of_week_as_i.should == 2
   end
-  
+
   it "should give you equivalent Date, DateTime and Time objects" do
     day = d(2000, 1, 1)
     day.date.should be_instance_of(Date)
@@ -48,7 +48,7 @@ describe Day, 'readers' do
     d(2008, 11, 30).weekday_occurrence_this_month.should == :fifth
     d(2008, 11, 19).weekday_occurrence_this_month.should == :third
   end
-  
+
   it "should know when it is one" do
     d(2000, 2, 29).leap?.should == true
     d(2000, 2, 28).leap?.should == false
@@ -71,7 +71,7 @@ describe Day, 'math and logic' do
     (d(2000, 5, 21) >  d(2001, 5, 21)).should == false
     (d(2001, 5, 21) >  d(2000, 5, 21)).should == true
   end
-  
+
   it "should be able to add with integers" do
     (d(2000, 1,  11) + 1).should == d(2000, 1, 12)
     (d(1999, 12, 31) + 1).should == d(2000, 1, 1)
@@ -79,7 +79,7 @@ describe Day, 'math and logic' do
     (d(2000, 2,  28) + 2).should == d(2000, 3, 1)
     (d(2001, 2,  28) + 2).should == d(2001, 3, 2)
   end
-  
+
   it "should be able to subtract with integers" do
     (d(2000, 1, 12) - 1).should == d(2000, 1, 11)
     (d(2000, 1,  1) - 1).should == d(1999, 12, 31)
@@ -92,19 +92,19 @@ describe Day, 'math and logic' do
     a = d(2000, 1, 28)
     # Because Day has no writable state of it's own (but Year does) I am assigning a random value
     # to month_factory (an attribute on the year).
-    a.year.month_factory = expected = rand_int 
+    a.year.month_factory = expected = rand_int
     b = a + 5 # the month and the day change
     # but the month should still hold the original random value
     b.year.month_factory.should == expected
     b.object_id.should_not == a.object_id
   end
-  
+
   it "should be enumerable in a range" do
     (d(2000, 1, 1)..d(2000, 1, 4)).to_a.should == [
       d(2000, 1, 1), d(2000, 1, 2), d(2000, 1, 3), d(2000, 1, 4)
     ]
   end
-  
+
   it "should be able to get days since and until other days" do
     d(2000, 1, 3).since(d(2000, 1, 1)).should == 2
     d(2000, 2, 1).since(d(2000, 1, 1)).should == 31
