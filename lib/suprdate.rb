@@ -92,6 +92,10 @@ module Suprdate
 
     def to_s() inspect end
 
+    def ==(cmp) cmp.class == self.class && (self <=> cmp) == 0 end
+    alias :eql? :==
+    def hash() inspect.hash end
+
     def initialize(value)
       @value = value
       self # intentional
