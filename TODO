@@ -1,12 +1,6 @@
-=== To Do
-
-  - Documentation of how to use the DSL. 
-    - What different things mean
-    - How it's constructed
-    - Results yielded
-  - Generally throw more exceptions, will lead to errors that are easier to fix
-  - Odd extra few comments for improving comprehensibility
-  - API documentation
-  - RubyForge / Google Code / 
-  - years_since, months_since, days_since, weeks_since (and, of course, equivalents for until)
-  - weeks
+- Generally throw more exceptions, will lead to errors that are easier to fix.
+- Odd extra few comments for improving comprehensibility.
+- API documentation.
+- RubyForge / Google Code / RubyGems.
+- years_since, months_since, days_since, weeks_since (and, of course, equivalents for until).
+- weeks.

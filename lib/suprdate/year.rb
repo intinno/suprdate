@@ -16,7 +16,6 @@ module Suprdate
       super(v)
     end
     
-    
     protected :initialize # for + and -
     
     def <=>(operand) 

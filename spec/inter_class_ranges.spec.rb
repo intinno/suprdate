@@ -50,4 +50,3 @@ describe 'range enumeration' do
   end
 
 end
-

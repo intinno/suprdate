@@ -180,5 +180,3 @@ module Suprdate
   }
   
 end
-
-require Suprdate::LIB_DIR + "/suprdate/dsl"
