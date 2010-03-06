@@ -1,5 +1,3 @@
-require 'rubygems'
-require 'spec'
 require File.expand_path(File.join(File.dirname(__FILE__), "..")) + '/lib/suprdate'
 include Suprdate
 
@@ -19,7 +17,3 @@ end
 alias :d :Day
 alias :m :Month
 alias :y :Year
-alias :r :Repeats
-
-Dir["#{BASE_DIR}/spec/*.spec.rb"].each { |f| require f }
-Spec::Runner::ExampleGroupRunner.new(nil)

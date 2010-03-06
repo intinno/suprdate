@@ -1,3 +1,5 @@
+require File.dirname(__FILE__) + '/spec_helper'
+
 # http://refactormycode.com/codes/681-rspec-example-does-not-contain-a-should
 
 describe 'range enumeration' do

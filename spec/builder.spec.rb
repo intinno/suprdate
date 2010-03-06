@@ -1,3 +1,5 @@
+require File.dirname(__FILE__) + '/spec_helper'
+
 describe Builder, 'normal unit methods' do
 
   it "should build years" do
@@ -53,17 +55,11 @@ end
 describe Builder, 'exported builder methods' do
 
   it "should be defined" do
-    defined = ['Year', 'Month', 'Day', 'Event', 'Repeats', 'Date', 'Today'].each { |e| respond_to?(e).should == true }
+    defined = ['Year', 'Month', 'Day', 'Date', 'Today'].each do |e|
+      respond_to?(e).should == true
+    end
     (Builder.builder_methods.map { |m| m.to_export } - defined).should == []
     Day(2008, 10, 10).should == DEFAULT_BUILDER.day(2008, 10, 10)
-  end
-
-end
-
-describe Builder, 'event' do
-
-  it "should create a paragraph" do
-    DEFAULT_BUILDER.event.should be_kind_of(DSL::Sentence)
   end
 
 end

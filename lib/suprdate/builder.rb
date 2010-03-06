@@ -45,13 +45,6 @@ module Suprdate
       send(UNIT_NUM_PARTS[parts.nitems], *parts)
     end
 
-    # Creates a new DSL paragraph for expressing events (see Suprdate::DSL).
-    def event(*args)
-      DSL::Paragraph.new(*args).every
-    end
-
-    alias :repeats :event
-
     def self.local_methods # :nodoc:
       (instance_methods - superclass.instance_methods - Kernel.methods)
     end

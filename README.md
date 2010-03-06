@@ -9,7 +9,7 @@ Installation
 	cd ~ # or wherever you want it installed
 	git clone git://github.com/olliesaunders/suprdate.git
 	cd suprdate
-	bin/run_specs # check to see that it's working (requires rspec)
+	spec spec/* # check to see that it's working (requires rspec)
 	bin/irb # this script requires and includes the library, and starts an interactive ruby session
 
 Inclusion

@@ -1,3 +1,5 @@
+require File.dirname(__FILE__) + '/spec_helper'
+
 describe Suprdate, :every do
 
   it "should filter lists by integer and symbol" do
