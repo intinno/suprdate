@@ -1,7 +1,7 @@
 module Suprdate
-  
+
   class Day < Unit
-  
+
     require 'date'
     attr_reader :month
 
@@ -12,64 +12,64 @@ module Suprdate
       end
       super(value)
     end
-    
+
     protected :initialize
-    
+
     STRFTIME_STR = '%Y-%m-%d'
-    
+
     def inspect() "#@month-#{@value.to_s.rjust(2, '0')}" end
     def year() @month.year end
-    
+
     # This day as a Ruby Time object.
     def time() Time.mktime(*parts) end
-      
+
     # This day as a Ruby Date object.
     def date() Date.new(*parts) end
-    
+
     # This day as a Ruby DateTime object.
     def datetime() DateTime.new(*parts) end
-      
+
     # Polymorphic feature; guarantees you a list of Suprdate::Day
     def days() [self] end
-      
+
     # Polymorphic feature; guarantees you a Suprdate::Day
     def day() self end
-      
+
     # Day of the week as a symbol. (See Suprdate::WEEKDAYS_AS_SYM)
     def of_week_as_sym() WEEKDAYS_AS_SYM[of_week_as_i] end
-      
+
     # Day of the week as a string. (See Suprdate::WEEKDAYS_AS_STR)
     def of_week_as_s() WEEKDAYS_AS_STR[of_week_as_i] end
-      
+
     # Day of the week as an integer. Presently Sunday is 1, Monday is 2 etc.
     def of_week_as_i() date.wday + 1 end
-      
+
     # Day of the year. January 1st is 1.
     def of_year() (date - Date.new(year.value, 1, 1)).numerator + 1 end
-      
+
     # Whether this day is a leap day or, in other words, February 29th.
     def leap?() value == 29 && @month.value == 2 end
-      
+
     # Next successive day.
     def succ() self + 1 end
-      
+
     # Return a new day incremented by an integer.
     def +(increase) new_from_date(date + increase) end
-      
+
     # Return a new day decremented by an integer.
     def -(decrease) new_from_date(date - decrease) end
-      
+
     # The number of days since parameter#day.
     def since(operand) (date - operand.day.date).numerator end
-      
+
     # The number of days until parameter#day.
     def until(operand) (operand.day.date - date).numerator end
-      
-    def <=>(operand) 
+
+    def <=>(operand)
       return -1 if operand == Infinity
-      date <=> operand.day.date 
+      date <=> operand.day.date
     end
-    
+
     # If this day is the first Monday of the month this method returns 1.
     # If this day is the second Monday of the month this method returns 2.
     # Works for all days.
@@ -80,15 +80,15 @@ module Suprdate
       end
       ORDINALS[w_days_this_month.nitems]
     end
-    
+
     alias :of_month :value
-  
+
     def parts() [year.value, @month.value, value] end # :nodoc:
-            
+
     def new_from_date(date) # :nodoc:
       new(@month.new(year.new(date.year), date.month), date.day)
     end
-  
+
   end
-  
+
 end
