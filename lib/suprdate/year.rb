@@ -47,6 +47,8 @@ module Suprdate
       false
     end
 
+    def self.current() Today().year end
+
     alias :[] :month
 
     protected

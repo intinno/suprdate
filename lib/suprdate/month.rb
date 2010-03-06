@@ -22,6 +22,10 @@ module Suprdate
 
     protected :initialize
 
+    def to_s() "#{MONTHS_AS_STR[@value]}, #{@year}" end
+
+    def self.current() Today().month end
+
     # Name of month as symbol.
     def to_sym() MONTHS_AS_SYM[@value] end
 
