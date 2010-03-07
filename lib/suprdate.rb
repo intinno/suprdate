@@ -184,3 +184,7 @@ module Suprdate
   }
 
 end
+
+class Date 
+  def to_month() Month.new(self.strftime("%Y").to_i, self.strftime("%m").to_i) end
+end
