@@ -8,7 +8,8 @@ module Suprdate
     STRFTIME_STR = '%Y-%m'
 
     def initialize(year, value)
-      @year = year
+      @year = year if year.is_a?(Suprdate::Year)
+      @year = Year.new(year) if year.is_a?(Integer)
       @value = if value.kind_of?(Symbol)
         MONTHS_SYM_TO_I.fetch(value)
       else
